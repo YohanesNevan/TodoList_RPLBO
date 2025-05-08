@@ -18,7 +18,7 @@ Fitur Utama
 Teknologi yang Digunakan
 Bahasa: Java
 
-GUI: JavaFX (opsional, jika menggunakan antarmuka grafis)
+GUI: JavaFX,CSS
 
 Build Tool: Maven
 
