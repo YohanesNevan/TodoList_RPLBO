@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
@@ -100,19 +101,52 @@ public class DashboardController {
 
     }
 
-    // Metode initialize yang akan dipanggil setelah FXML di-load
     @FXML
     private void initialize() {
-        // Inisialisasi kolom tabel
-        System.out.println("DashboardController initialized");
-
-        // Menghubungkan kolom dengan data Task
         colNama.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNama()));
         colTanggal.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTanggal()));
         colStatus.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
 
-        // Set items untuk TableView dari TaskData
+        colAksi.setCellFactory(col -> new TableCell<>() {
+            private final Button editButton = new Button("Edit");
+            private final Button deleteButton = new Button("Hapus");
+
+            {
+                editButton.setOnAction(event -> {
+                    Task task = getTableView().getItems().get(getIndex());
+                    handleEdit(task);
+                });
+                deleteButton.setOnAction(event -> {
+                    Task task = getTableView().getItems().get(getIndex());
+                    TaskData.removeTask(task);
+                });
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(new HBox(5, editButton, deleteButton));
+                }
+            }
+        });
+
         taskTable.setItems(TaskData.getTasks());
+    }
+
+    private void handleEdit(Task task) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/tambahtugas-view.fxml"));
+            Parent root = loader.load();
+            TambahTugasController controller = loader.getController();
+            controller.setEditMode(task);
+            Stage stage = (Stage) taskTable.getScene().getWindow();
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void showAlert(String title, String message) {
