@@ -19,14 +19,24 @@ public class RepeatedTask extends Task {
     }
 
 
-    public RepeatedTask(int id, int userId, String name, String description, LocalDateTime dueDate,
-                        String priority, String category, RepeatType repeatType, LocalDateTime startDate, LocalDateTime endDate) {
-        super(name, description, dueDate, priority, category); // atribut turunan
+    public RepeatedTask(int id, String name, String description, LocalDateTime dueDate,
+                        String priority, String category, String status, String repeatType, int userId, LocalDateTime startDate, LocalDateTime endDate, DayOfWeek targetDayOfWeek) {
+        super(); // atribut turunan
+        setName(name);
+        setDescription(description);
+        setDueDate(dueDate);
+        setPriority(priority);
+        setCategory(category);
+        setStatus(status);
         this.id = id;
         this.userId = userId;
-        this.repeatType = repeatType;
+        this.repeatType = RepeatType.valueOf(repeatType.toUpperCase());
         this.startDate = startDate;
         this.endDate = endDate;
+
+        if (this.repeatType == RepeatType.SPECIFIC_DAY) {
+            this.targetDayOfWeek = targetDayOfWeek;
+        }
     }
 
     public LocalDateTime getNextOccurrence(LocalDateTime currentDate) { // cari kapan tasknya muncul lagi
@@ -38,10 +48,14 @@ public class RepeatedTask extends Task {
             case MONTHLY:
                 return currentDate.plusMonths(1);
             case SPECIFIC_DAY:
-                int currentDayValue = currentDate.getDayOfWeek().getValue(); // hari ini hari apa
-                int targetValue = targetDayOfWeek.getValue(); // mau diulang setiap hari apa
-                int daysUntilTarget = (targetValue - currentDayValue + 7) % 7; // berapa hari ke target perulangan
-                return currentDate.plusDays(daysUntilTarget == 0 ? 7 : daysUntilTarget); // kalau hari ini, ke minggu depan
+                if (targetDayOfWeek != null) {
+                    int currentDayValue = currentDate.getDayOfWeek().getValue(); // hari ini hari apa
+                    int targetValue = targetDayOfWeek.getValue(); // mau diulang setiap hari apa
+                    int daysUntilTarget = (targetValue - currentDayValue + 7) % 7; // berapa hari ke target perulangan
+                    return currentDate.plusDays(daysUntilTarget == 0 ? 7 : daysUntilTarget); // kalau hari ini, ke minggu depan
+                } else {
+                    return currentDate;
+                }
             default:
                 return currentDate;
         }

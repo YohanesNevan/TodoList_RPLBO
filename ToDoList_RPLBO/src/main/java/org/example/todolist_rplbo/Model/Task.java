@@ -16,10 +16,6 @@ public class Task {
     private String repeatType;
     private int userId;
 
-    public Task(String name, String description, LocalDateTime dueDate, String priority, String category) {
-
-    }
-
     public Task(String name, String description, LocalDateTime dueDate, String priority, String category, String status, boolean isRepeated, String repeatType, int userId) {
         this.name = name;
         this.description = description;
@@ -31,6 +27,8 @@ public class Task {
         this.repeatType = repeatType;
         this.userId = userId;
     }
+
+    public Task() {}
 
     public boolean isOverdue() { //apakah sudah lewat deadline
         return status.equalsIgnoreCase("Berlangsung") && dueDate.isBefore(LocalDateTime.now());
@@ -48,7 +46,8 @@ public class Task {
     }
 
     public static Task fromResultSet(ResultSet rs) throws SQLException { //buat ambil datanya dari resultset
-        Task task = new Task(name, description, dueDate, priority, category);
+        Task task = new Task();
+
         task.setId(rs.getInt("id"));
         task.setName(rs.getString("name"));
         task.setDescription(rs.getString("description"));
