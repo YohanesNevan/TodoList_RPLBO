@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.todolist_rplbo.RiwayatController"
+            prefWidth="800" prefHeight="600">
+
+    <center>
+        <VBox spacing="10" style="-fx-padding: 20;">
+            <Label text="Riwayat Tugas" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+            <Label fx:id="summaryLabel" style="-fx-font-size: 14px; -fx-padding: 0 0 10 0;"/>
+
+            <TableView fx:id="riwayatTable" prefHeight="400">
+                <columns>
+                    <TableColumn fx:id="colTaskName" text="Nama Tugas" prefWidth="200"/>
+                    <TableColumn fx:id="colTanggalMulai" text="Tanggal Mulai" prefWidth="120"/>
+                    <TableColumn fx:id="colTanggalSelesai" text="Tanggal Selesai" prefWidth="120"/>
+                    <TableColumn fx:id="colStatus" text="Status" prefWidth="100"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+</BorderPane>
