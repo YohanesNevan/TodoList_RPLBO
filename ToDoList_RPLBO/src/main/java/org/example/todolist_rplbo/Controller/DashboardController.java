@@ -25,6 +25,9 @@ public class DashboardController {
     private TableColumn<Task, String> colTanggal; // Set column type to Task and String
 
     @FXML
+    public TableColumn <Task, String> colTanggalSelesai; // Set column type to Task and String
+
+    @FXML
     private TableColumn<Task, String> colStatus; // Set column type to Task and String
 
     @FXML
@@ -105,6 +108,7 @@ public class DashboardController {
     private void initialize() {
         colNama.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNama()));
         colTanggal.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTanggal()));
+        colTanggalSelesai.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTanggalSelesai()));
         colStatus.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
 
         colAksi.setCellFactory(col -> new TableCell<>() {
@@ -112,6 +116,9 @@ public class DashboardController {
             private final Button deleteButton = new Button("Hapus");
 
             {
+                editButton.setStyle("-fx-background-color: gold; -fx-text-fill: white; -fx-font-weight: bold;");
+                deleteButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold;");
+
                 editButton.setOnAction(event -> {
                     Task task = getTableView().getItems().get(getIndex());
                     handleEdit(task);
