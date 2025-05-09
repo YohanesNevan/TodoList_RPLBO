@@ -10,6 +10,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+
+// Connection to SQLite database - Maik
 import org.example.todolist_rplbo.database.SQLiteConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

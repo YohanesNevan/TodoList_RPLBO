@@ -13,6 +13,13 @@ import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import java.io.IOException;
 
+// Connection to SQLite database - Maik
+import org.example.todolist_rplbo.database.SQLiteConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+
 public class LoginController {
 
     @FXML
@@ -22,31 +29,43 @@ public class LoginController {
     private PasswordField password;
 
     @FXML
-    private void login(ActionEvent event) { // Ubah parameter menjadi ActionEvent
+    private void login(ActionEvent event) {
         String user = username.getText();
         String pass = password.getText();
 
-        if (user.equals("admin") && pass.equals("admin")) {
-            try {
-                // Load file FXML dashboard
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/dashboard-view.fxml"));
-                Parent root = loader.load();
+        // Connect to the database
+        try (Connection connection = SQLiteConnection.getConnection()) {
+            String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, user);
+            preparedStatement.setString(2, pass);
 
-                // Dapatkan stage dari event
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            // Execute the query
+            if (preparedStatement.executeQuery().next()) {
+                try {
+                    // Load file FXML dashboard
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/dashboard-view.fxml"));
+                    Parent root = loader.load();
 
-                // Buat scene baru dan set ke stage
-                Scene scene = new Scene(root);
-                stage.setScene(scene);
-                stage.setTitle("Dashboard");
-                stage.show();
+                    // Dapatkan stage dari event
+                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                showAlert("Error", "Failed to load dashboard.");
+                    // Buat scene baru dan set ke stage
+                    Scene scene = new Scene(root);
+                    stage.setScene(scene);
+                    stage.setTitle("Dashboard");
+                    stage.show();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    showAlert("Error", "Failed to load dashboard.");
+                }
+            } else {
+                showAlert("Login Failed", "Incorrect username or password.");
             }
-        } else {
-            showAlert("Login Failed", "Incorrect username or password.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Database connection failed.");
         }
     }
 
