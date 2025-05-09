@@ -1,3 +1,4 @@
+// TambahTugasController.java
 package org.example.todolist_rplbo.Controller;
 
 import javafx.fxml.FXML;
@@ -6,89 +7,80 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDate;
 
 public class TambahTugasController {
+    @FXML private TextField judulField;
+    @FXML private TextArea deskripsiArea;
+    @FXML private DatePicker tanggalMulaiPicker;
+    @FXML private DatePicker tanggalSelesaiPicker;
 
-    @FXML
-    private TextField judulField;
+    private Task taskBeingEdited;
 
-    @FXML
-    private TextArea deskripsiArea;
-
-    @FXML
-    private DatePicker tanggalMulaiPicker;
-
-    @FXML
-    private DatePicker tanggalSelesaiPicker;
+    public void setEditMode(Task task) {
+        this.taskBeingEdited = task;
+        judulField.setText(task.getNama());
+        deskripsiArea.setText(task.getDeskripsi());
+        tanggalMulaiPicker.setValue(LocalDate.parse(task.getTanggal()));
+        tanggalSelesaiPicker.setValue(LocalDate.parse(task.getTanggalSelesai()));
+    }
 
     @FXML
     public void handleSimpan(ActionEvent event) {
-        // Ambil data dari form
         String judul = judulField.getText();
         String deskripsi = deskripsiArea.getText();
         LocalDate tanggalMulai = tanggalMulaiPicker.getValue();
         LocalDate tanggalSelesai = tanggalSelesaiPicker.getValue();
 
-        // Tambahkan tugas ke TaskData
-        Task newTask = new Task(judul, tanggalMulai.toString(), "Belum Dikerjakan");
-        TaskData.addTask(newTask);
+        if (judul.isEmpty() || deskripsi.isEmpty() || tanggalMulai == null || tanggalSelesai == null) {
+            new Alert(Alert.AlertType.ERROR, "Semua field harus diisi.").show();
+            return;
+        }
 
-        // Untuk testing: tampilkan isi input di konsol
-        System.out.println("Tugas Disimpan:");
-        System.out.println("Judul: " + judul);
-        System.out.println("Deskripsi: " + deskripsi);
-        System.out.println("Tanggal Mulai: " + tanggalMulai);
-        System.out.println("Tanggal Selesai: " + tanggalSelesai);
+        if (taskBeingEdited != null) {
+            taskBeingEdited.setNama(judul);
+            taskBeingEdited.setDeskripsi(deskripsi);
+            taskBeingEdited.setTanggal(tanggalMulai.toString());
+            taskBeingEdited.setTanggalSelesai(tanggalSelesai.toString());
+        } else {
+            Task newTask = new Task(judul, tanggalMulai.toString(), "Belum Dikerjakan", deskripsi, tanggalSelesai.toString());
+            TaskData.addTask(newTask);
+        }
 
-        // Setelah simpan, pindah ke dashboard
+        goToDashboard();
+    }
+
+    @FXML
+    public void handleBatal(ActionEvent event) {
+        judulField.clear();
+        deskripsiArea.clear();
+        tanggalMulaiPicker.setValue(null);
+        tanggalSelesaiPicker.setValue(null);
+    }
+
+    private void goToDashboard() {
         try {
-            // Load Dashboard scene
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/dashboard-view.fxml"));
-            Parent dashboardLayout = loader.load();
-
-            // Set scene baru di window
-            Scene dashboardScene = new Scene(dashboardLayout);
+            Parent root = loader.load();
             Stage stage = (Stage) judulField.getScene().getWindow();
-            stage.setScene(dashboardScene);
-            stage.show();
+            stage.setScene(new Scene(root));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
-
-    @FXML
-    public void handleBatal(ActionEvent event) {
-        // Kosongkan semua input
-        judulField.clear();
-        deskripsiArea.clear();
-        tanggalMulaiPicker.setValue(null);
-        tanggalSelesaiPicker.setValue(null);
-
-        System.out.println("Form dibatalkan.");
-    }
-
     public void handledashboard(ActionEvent event) {
         try {
-            // Load Dashboard scene
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/dashboard-view.fxml"));
-            Parent dashboardLayout = loader.load();
-
-            // Set scene baru di window
-            Scene dashboardScene = new Scene(dashboardLayout);
+            Parent root = loader.load();
             Stage stage = (Stage) judulField.getScene().getWindow();
-            stage.setScene(dashboardScene);
-            stage.show();
+            stage.setScene(new Scene(root));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 }
-

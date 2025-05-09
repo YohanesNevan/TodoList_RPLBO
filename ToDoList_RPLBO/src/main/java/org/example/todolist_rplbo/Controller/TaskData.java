@@ -13,5 +13,12 @@ public class TaskData {
     public static void addTask(Task task) {
         tasks.add(task);
     }
-}
 
+    public static void removeTask(Task task) {
+        tasks.remove(task);
+    }
+
+    public static Task findTaskById(String id) {
+        return tasks.stream().filter(t -> t.getId().equals(id)).findFirst().orElse(null);
+    }
+}
