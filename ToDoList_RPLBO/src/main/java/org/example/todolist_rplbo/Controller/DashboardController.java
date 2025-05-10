@@ -104,6 +104,7 @@ public class DashboardController {
 
     }
 
+
     @FXML
     private void initialize() {
         colNama.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNama()));
