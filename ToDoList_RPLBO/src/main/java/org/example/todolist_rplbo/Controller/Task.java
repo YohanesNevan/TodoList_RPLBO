@@ -31,4 +31,3 @@ public class Task {
     public String getTanggalSelesai() { return tanggalSelesai; }
     public void setTanggalSelesai(String tanggalSelesai) { this.tanggalSelesai = tanggalSelesai; }
 }
-//

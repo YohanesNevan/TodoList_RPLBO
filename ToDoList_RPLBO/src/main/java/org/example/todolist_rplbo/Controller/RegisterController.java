@@ -37,7 +37,7 @@ public class RegisterController {
         } else {
             showAlert("Register Failed", "Please fill all fields.");
         }
-    }//
+    }
 
     @FXML
     private void showLoginStage(MouseEvent event) {
