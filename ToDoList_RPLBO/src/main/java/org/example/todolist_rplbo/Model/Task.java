@@ -4,13 +4,14 @@ import java.time.LocalDateTime;
 
 public class Task {
     private String title;
-    private String status; // "Berlangsung", "Selesai", dll
+    private String status;
+    private LocalDateTime createdAt;
     private LocalDateTime dueDate;
-    private boolean reminderShown = false;
 
     public Task(String title, String status, LocalDateTime dueDate) {
         this.title = title;
         this.status = status;
+        this.createdAt = LocalDateTime.now();
         this.dueDate = dueDate;
     }
 
@@ -22,16 +23,11 @@ public class Task {
         return status;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
     public LocalDateTime getDueDate() {
         return dueDate;
     }
-
-    public boolean isReminderShown() {
-        return reminderShown;
-    }
-
-    public void setReminderShown(boolean reminderShown) {
-        this.reminderShown = reminderShown;
-    }
-
 }
