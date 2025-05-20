@@ -19,7 +19,7 @@ public class ProfileAkunController {
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(registerScene);
-            stage.setTitle("ProfilAkun");
+            stage.setTitle("Dashbooard");
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

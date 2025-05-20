@@ -18,7 +18,7 @@ public class RiwayatController {
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(registerScene);
-            stage.setTitle("Riwayat");
+            stage.setTitle("Dashboard");
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

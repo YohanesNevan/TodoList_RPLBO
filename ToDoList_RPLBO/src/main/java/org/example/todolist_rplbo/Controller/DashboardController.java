@@ -2,6 +2,8 @@ package org.example.todolist_rplbo.Controller;
 
 
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.transformation.FilteredList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,6 +14,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.function.Predicate;
 
 public class DashboardController {
 
@@ -35,6 +38,12 @@ public class DashboardController {
 
     @FXML
     private Region spacer;
+
+    @FXML
+    private FilteredList<Task> filteredTasks;
+
+    @FXML
+    private TextField searchBox;
 
     // Handler untuk menu sidebar
     @FXML
@@ -140,7 +149,41 @@ public class DashboardController {
             }
         });
 
-        taskTable.setItems(TaskData.getTasks());
+        // Inisialisasi filtered list
+        filteredTasks = new FilteredList<>(TaskData.getTasks(), p -> true);
+        taskTable.setItems(filteredTasks); // Hanya panggil sekali
+
+        // Setup listener untuk search box
+        if (searchBox != null) {
+            searchBox.textProperty().addListener((observable, oldValue, newValue) -> {
+                filteredTasks.setPredicate(createTaskPredicate(newValue));
+            });
+        }
+    }
+
+    // Pindahkan method createTaskPredicate ke level class
+    private Predicate<Task> createTaskPredicate(String searchText) {
+        return task -> {
+            if (searchText == null || searchText.isEmpty()) return true;
+
+            String lowerCaseFilter = searchText.toLowerCase();
+            return task.getNama().toLowerCase().contains(lowerCaseFilter) ||
+                    task.getTanggal().toLowerCase().contains(lowerCaseFilter) ||
+                    task.getTanggalSelesai().toLowerCase().contains(lowerCaseFilter) ||
+                    task.getStatus().toLowerCase().contains(lowerCaseFilter);
+        };
+
+
+
+
+//        taskTable.setItems(TaskData.getTasks());
+    }
+
+    @FXML
+    public void bersihkansearch(ActionEvent event) {
+        if (searchBox != null) {
+            searchBox.clear();
+        }
     }
 
     private void handleEdit(Task task) {
@@ -163,5 +206,6 @@ public class DashboardController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
 }
 
