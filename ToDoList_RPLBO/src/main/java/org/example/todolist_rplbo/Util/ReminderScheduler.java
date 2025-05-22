@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import org.example.todolist_rplbo.Model.Task;
-import org.example.todolist_rplbo.Service.TaskService;
+import org.example.todolist_rplbo.Service.TaskManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -15,11 +15,11 @@ import java.util.concurrent.TimeUnit;
 
 public class ReminderScheduler {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    private final TaskService taskService;
+    private final TaskManager taskManager;
     private final long reminderMinutes = 10;
 
-    public ReminderScheduler(TaskService taskService) {
-        this.taskService = taskService;
+    public ReminderScheduler(TaskManager taskManager) {
+        this.taskManager = taskManager;
     }
 
     public void start() {
@@ -27,7 +27,8 @@ public class ReminderScheduler {
     }
 
     private void checkTasks() {
-        List<Task> tasks = taskService.getAllTasks();
+        int userId = UserSession.getUserId();
+        List<Task> tasks = taskManager.getAllTasksByUser(userId);
         LocalDateTime now = LocalDateTime.now();
 
         for (Task task : tasks) {
@@ -47,7 +48,7 @@ public class ReminderScheduler {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Pengingat Tugas");
         alert.setHeaderText("Tugas akan jatuh tempo!");
-        alert.setContentText("Tugas: " + task.getTitle() + "\nDeadline: " + task.getDueDate());
+        alert.setContentText("Tugas: " + task.getName() + "\nDeadline: " + task.getDueDate());
         alert.show();
     }
 

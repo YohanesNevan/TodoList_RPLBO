@@ -8,9 +8,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
+import org.example.todolist_rplbo.Model.Task;
+import org.example.todolist_rplbo.Service.TaskManager;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class TambahTugasController {
     @FXML private TextField judulField;
@@ -19,13 +23,22 @@ public class TambahTugasController {
     @FXML private DatePicker tanggalSelesaiPicker;
 
     private Task taskBeingEdited;
+    private TaskManager taskManager;
+
+    public TambahTugasController() {
+        try {
+            taskManager = new TaskManager();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void setEditMode(Task task) {
         this.taskBeingEdited = task;
-        judulField.setText(task.getNama());
-        deskripsiArea.setText(task.getDeskripsi());
-        tanggalMulaiPicker.setValue(LocalDate.parse(task.getTanggal()));
-        tanggalSelesaiPicker.setValue(LocalDate.parse(task.getTanggalSelesai()));
+        judulField.setText(task.getName());
+        deskripsiArea.setText(task.getDescription());
+        tanggalMulaiPicker.setValue((task.getDueDate().toLocalDate()));
+        tanggalSelesaiPicker.setValue((task.getDueDate().toLocalDate()));
     }
 
     @FXML
@@ -41,10 +54,10 @@ public class TambahTugasController {
         }
 
         if (taskBeingEdited != null) {
-            taskBeingEdited.setNama(judul);
-            taskBeingEdited.setDeskripsi(deskripsi);
-            taskBeingEdited.setTanggal(tanggalMulai.toString());
-            taskBeingEdited.setTanggalSelesai(tanggalSelesai.toString());
+            taskBeingEdited.setName(judul);
+            taskBeingEdited.setDescription(deskripsi);
+            taskBeingEdited.setDueDate(LocalDateTime.parse(tanggalMulai.toString()));
+            taskBeingEdited.setDueDate(LocalDateTime.parse(tanggalSelesai.toString()));
         } else {
             Task newTask = new Task(judul, tanggalMulai.toString(), "Belum Dikerjakan", deskripsi, tanggalSelesai.toString());
             TaskData.addTask(newTask);

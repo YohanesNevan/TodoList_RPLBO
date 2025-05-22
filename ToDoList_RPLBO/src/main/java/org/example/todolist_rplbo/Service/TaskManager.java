@@ -1,6 +1,7 @@
 package org.example.todolist_rplbo.Service;
 
 import org.example.todolist_rplbo.Model.Task;
+import org.example.todolist_rplbo.database.SQLiteConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +14,7 @@ public class TaskManager {
     private Connection conn;
 
     public TaskManager() throws SQLException {
-        conn = DBConnection.getConnection();
+        conn = SQLiteConnection.getConnection();
     }
 
     public boolean createTask(Task task) {

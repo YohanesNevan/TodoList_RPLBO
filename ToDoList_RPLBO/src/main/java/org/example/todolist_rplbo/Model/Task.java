@@ -8,6 +8,7 @@ public class Task {
     private int id;
     private String name;
     private String description;
+    private LocalDateTime startDate;
     private LocalDateTime dueDate;
     private String priority;
     private String category;
@@ -15,16 +16,51 @@ public class Task {
     private boolean isRepeated;
     private String repeatType;
     private int userId;
+    private boolean isReminderShown;
 
-    public Task(String name, String description, LocalDateTime dueDate, String priority, String category, String status, boolean isRepeated, String repeatType, int userId) {
+    public Task(String name, String description, LocalDateTime startDate, LocalDateTime dueDate, String priority, String category, String status, boolean isRepeated, String repeatType, int userId, boolean isReminderShown) {
         this.name = name;
         this.description = description;
+        this.startDate = startDate;
         this.dueDate = dueDate;
         this.priority = priority;
         this.category = category;
         this.status = status;
         this.isRepeated = isRepeated;
         this.repeatType = repeatType;
+        this.userId = userId;
+        this.isReminderShown = isReminderShown;
+    }
+
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public boolean isReminderShown() {
+        return isReminderShown;
+    }
+
+    public void setReminderShown(boolean reminderShown) {
+        isReminderShown = reminderShown;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
@@ -58,6 +94,7 @@ public class Task {
         task.setRepeated(rs.getBoolean("is_repeated"));
         task.setRepeatType(rs.getString("repeat_type"));
         task.setUserId(rs.getInt("user_id"));
+        task.setReminderShown(rs.getBoolean("isReminderShown"));
         return task;
     }
 

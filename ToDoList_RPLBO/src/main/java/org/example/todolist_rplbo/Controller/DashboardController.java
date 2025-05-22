@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import org.example.todolist_rplbo.Model.Task;
 
 import java.io.IOException;
 import java.util.function.Predicate;
@@ -115,9 +116,9 @@ public class DashboardController {
 
     @FXML
     private void initialize() {
-        colNama.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNama()));
-        colTanggal.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTanggal()));
-        colTanggalSelesai.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTanggalSelesai()));
+        colNama.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
+        colTanggal.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDueDate()));
+        colTanggalSelesai.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getDueDate()));
         colStatus.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
 
         colAksi.setCellFactory(col -> new TableCell<>() {
@@ -167,9 +168,8 @@ public class DashboardController {
             if (searchText == null || searchText.isEmpty()) return true;
 
             String lowerCaseFilter = searchText.toLowerCase();
-            return task.getNama().toLowerCase().contains(lowerCaseFilter) ||
-                    task.getTanggal().toLowerCase().contains(lowerCaseFilter) ||
-                    task.getTanggalSelesai().toLowerCase().contains(lowerCaseFilter) ||
+            return task.getName().toLowerCase().contains(lowerCaseFilter) ||
+                    task.getDueDate().toLocalDate().toString().contains(lowerCaseFilter) ||
                     task.getStatus().toLowerCase().contains(lowerCaseFilter);
         };
 
