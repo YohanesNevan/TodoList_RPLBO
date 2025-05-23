@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--        xmlns="http://javafx.com/javafx/11.0.14-internal"-->
+<!--        xmlns:fx="http://javafx.com/fxml/1"-->
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="500.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/23.0.1" fx:controller="org.example.todolist_rplbo.Controller.DashboardController">
+<BorderPane prefHeight="500.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/11.0.14-internal"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.todolist_rplbo.Controller.DashboardController">
 
     <!-- Sidebar Menu -->
     <left>
@@ -40,17 +48,28 @@
                         <Label style="-fx-font-size: 20px; -fx-font-weight: bold;" text="Daftar Tugas" />
                         <Region fx:id="spacer" HBox.hgrow="ALWAYS" />
                         <Button onAction="#handleTambahTugas" text="+ Tambah Tugas" />
+                        <Button layoutX="515.0" layoutY="10.0" onAction="#handleTambahKategori" text="+ Tambah Kategori" />
                     </children>
                 </HBox>
+                <StackPane styleClass="highlight-rectangle">
+                    <children>
+                        <TextField fx:id="searchBox" styleClass="transparent" />
+                        <Button mnemonicParsing="false" onAction="#bersihkansearch" styleClass="delete-button" text="Bersihkan" StackPane.alignment="CENTER_RIGHT" />
+                    </children>
+                </StackPane>
 
-                <TableView fx:id="taskTable" prefHeight="400">
+                <TableView fx:id="taskTable" prefHeight="385.0" prefWidth="637.0">
                     <columns>
-                        <TableColumn fx:id="colNama" prefWidth="134.6666717529297" text="Nama Tugas" />
-                        <TableColumn fx:id="colTanggal" prefWidth="98.6666259765625" text="Tanggal Dibuat" />
-                        <TableColumn fx:id="colTanggalSelesai" prefWidth="110.0" text="Deadline" />
-                        <TableColumn fx:id="colStatus" prefWidth="125.333251953125" text="Status" />
-                        <TableColumn fx:id="colAksi" prefWidth="150.666748046875" text="Aksi" />
+                        <TableColumn fx:id="colNama" prefWidth="108.00001525878906" text="Nama Tugas" />
+                        <TableColumn fx:id="colTanggalSelesai" prefWidth="99.33331298828125" text="Deadline" />
+                        <TableColumn fx:id="colPrioritas" prefWidth="89.99993896484375" text="Prioritas" />
+                        <TableColumn fx:id="colStatus" prefWidth="104.66665649414062" text="Status" />
+                        <TableColumn fx:id="colKategori" prefWidth="92.0" text="Kategori" />
+                        <TableColumn fx:id="colAksi" minWidth="200.0" prefWidth="200.0" text="Aksi" />
                     </columns>
+                    <opaqueInsets>
+                        <Insets />
+                    </opaqueInsets>
                 </TableView>
             </children>
         </VBox>
