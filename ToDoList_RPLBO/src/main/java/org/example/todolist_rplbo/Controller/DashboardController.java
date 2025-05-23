@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import org.example.todolist_rplbo.Model.Task;
 
 import java.io.IOException;
 import java.util.function.Predicate;
