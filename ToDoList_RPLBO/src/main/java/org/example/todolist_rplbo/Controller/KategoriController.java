@@ -8,46 +8,73 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.example.todolist_rplbo.Model.Category;
+import org.example.todolist_rplbo.Service.CategoryManager;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 public class KategoriController {
 
-    private static final ObservableList<String> kategoriList = FXCollections.observableArrayList();
+    private CategoryManager categoryManager;
+    private ObservableList<String> kategoriList = FXCollections.observableArrayList();
 
     @FXML private TextField kategoriField;
     @FXML private ListView<String> kategoriListView;
 
     @FXML
     private void initialize() {
-        kategoriListView.setItems(kategoriList);
-//        // Load kategori yang sudah ada
-//        kategoriList.addAll("Pekerjaan", "Rumah Tangga", "Belajar");
+        try {
+            categoryManager = new CategoryManager();
+            List<Category> categories = categoryManager.getAllCategories();
+
+            for (Category c : categories) {
+                kategoriList.add(c.getName());
+            }
+
+            kategoriListView.setItems(kategoriList);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Database Error", "Gagal mengambil data kategori.");
+        }
     }
 
     @FXML
     private void handleTambahKategori() {
         String newKategori = kategoriField.getText().trim();
         if (!newKategori.isEmpty() && !kategoriList.contains(newKategori)) {
-            kategoriList.add(newKategori);
-            kategoriField.clear();
+            boolean success = categoryManager.addCategory(newKategori);
+            if (success) {
+                kategoriList.add(newKategori);
+                kategoriField.clear();
+            } else {
+                showAlert("Gagal", "Kategori mungkin sudah ada.");
+            }
         }
+
     }
 
     @FXML
     private void handleHapusKategori() {
         String selected = kategoriListView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            kategoriList.remove(selected);
+                List<Category> all = categoryManager.getAllCategories();
+                Category target = all.stream().filter(c -> c.getName().equals(selected)).findFirst().orElse(null);
+
+                if (target != null && categoryManager.deleteCategory(target.getId())) {
+                    kategoriList.remove(selected);
+                } else {
+                    showAlert("Gagal", "Kategori gagal dihapus.");
+                }
         }
     }
 
-    public static ObservableList<String> getKategoriList() {
-        return kategoriList;
-    }
 
     public void handleKembali(ActionEvent event) {
         try {
@@ -62,6 +89,14 @@ public class KategoriController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void showAlert(String title, String message) {
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setTitle(title);
+        a.setHeaderText(null);
+        a.setContentText(message);
+        a.showAndWait();
     }
 
 }

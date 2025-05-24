@@ -2,6 +2,7 @@ package org.example.todolist_rplbo.Controller;
 
 
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,8 +14,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import org.example.todolist_rplbo.Model.Task;
+import org.example.todolist_rplbo.Service.TaskManager;
+import org.example.todolist_rplbo.Util.UserSession;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.function.Predicate;
 
 public class DashboardController {
@@ -29,7 +33,7 @@ public class DashboardController {
     private TableColumn<Task, String> colTanggal; // Set column type to Task and String
 
     @FXML
-    public TableColumn <Task, String> colTanggalSelesai; // Set column type to Task and String
+    public TableColumn<Task, String> colTanggalSelesai; // Set column type to Task and String
 
     @FXML
     private TableColumn<Task, String> colStatus; // Set column type to Task and String
@@ -88,14 +92,12 @@ public class DashboardController {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Konfirmasi Logout");
         alert.setHeaderText("Anda yakin ingin logout?");
-
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 try {
-                    // Kembali ke halaman login
+                    org.example.todolist_rplbo.Util.UserSession.endSession();
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/login-view.fxml"));
                     Parent root = loader.load();
-
                     Stage stage = (Stage) taskTable.getScene().getWindow();
                     stage.setScene(new Scene(root));
                     stage.setTitle("Login");
@@ -134,8 +136,7 @@ public class DashboardController {
     @FXML
     private void initialize() {
         colNama.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNama()));
-//        colTanggal.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTanggal()));
-        colTanggalSelesai.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTanggalSelesai()));
+        colTanggalSelesai.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTanggalSelesaiString()));
         colStatus.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
         colPrioritas.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPrioritas()));
         colKategori.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getKategori()));
@@ -165,7 +166,14 @@ public class DashboardController {
                 });
                 deleteButton.setOnAction(event -> {
                     Task task = getTableView().getItems().get(getIndex());
-                    TaskData.removeTask(task);
+                    try {
+                        TaskManager taskManager = new TaskManager();
+                        if (taskManager.deleteTask(task.getId())) {
+                            taskTable.getItems().remove(task);
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 });
 
 //                taskTable.setRowFactory(tv -> {
@@ -207,10 +215,8 @@ public class DashboardController {
                     setGraphic(null);
                 } else {
                     Task task = getTableView().getItems().get(getIndex());
-
-                    // Set repetition label
                     if (task.getPengulangan() != null) {
-                        switch(task.getPengulangan()) {
+                        switch (task.getPengulangan()) {
                             case "Harian":
                                 repetitionLabel.setText("🔄(Harian)");
                                 repetitionLabel.setTooltip(new Tooltip("Tugas Harian"));
@@ -238,17 +244,21 @@ public class DashboardController {
 
         });
 
-        // Inisialisasi filtered list
-        filteredTasks = new FilteredList<>(TaskData.getTasks(), p -> true);
-        taskTable.setItems(filteredTasks); // Hanya panggil sekali
+        try {
+            TaskManager taskManager = new TaskManager();
+            int userId = UserSession.getUserId();
+            filteredTasks = new FilteredList<>(FXCollections.observableArrayList(taskManager.getAllTasksByUser(userId)), p -> true);
+            taskTable.setItems(filteredTasks);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-        // Setup listener untuk search box
         if (searchBox != null) {
             searchBox.textProperty().addListener((observable, oldValue, newValue) -> {
                 filteredTasks.setPredicate(createTaskPredicate(newValue));
             });
         }
-        // ✅ Ini bagian yang harus DILUAR colAksi.setCellFactory
+
         taskTable.setRowFactory(tv -> {
             TableRow<Task> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -265,37 +275,26 @@ public class DashboardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/detail-view.fxml"));
             Parent root = loader.load();
-
             DetailController controller = loader.getController();
             controller.setTask(task);
-
-            // Ganti scene di stage yang sama (bukan buat stage baru)
             Stage stage = (Stage) taskTable.getScene().getWindow();
             stage.setScene(new Scene(root));
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 
-    // Pindahkan method createTaskPredicate ke level class
     private Predicate<Task> createTaskPredicate(String searchText) {
         return task -> {
             if (searchText == null || searchText.isEmpty()) return true;
-
-            String lowerCaseFilter = searchText.toLowerCase();
-            return task.getNama().toLowerCase().contains(lowerCaseFilter) ||
-//                    task.getTanggal().toLowerCase().contains(lowerCaseFilter) ||
-                    task.getTanggalSelesai().toLowerCase().contains(lowerCaseFilter) ||
-                    task.getStatus().toLowerCase().contains(lowerCaseFilter);
+            String lower = searchText.toLowerCase();
+            return task.getNama().toLowerCase().contains(lower)
+                    || task.getTanggalSelesaiString().toLowerCase().contains(lower)
+                    || task.getStatus().toLowerCase().contains(lower);
         };
-
-
-
-
-//        taskTable.setItems(TaskData.getTasks());
     }
+
 
     @FXML
     public void bersihkansearch(ActionEvent event) {

@@ -11,29 +11,39 @@ public class DBInitializer {
              Statement stmt = conn.createStatement()) {
 
             String createUsers = """
-                CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
-                    username TEXT NOT NULL UNIQUE,
-                    password TEXT NOT NULL
-                );
-            """;
+                        CREATE TABLE IF NOT EXISTS users (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            name TEXT NOT NULL,
+                            username TEXT NOT NULL UNIQUE,
+                            password TEXT NOT NULL
+                        );
+                    """;
 
             String createTasks = """
-                CREATE TABLE IF NOT EXISTS tasks (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER NOT NULL,
-                    nama TEXT NOT NULL,
-                    tanggal_dibuat TEXT NOT NULL,
-                    tanggal_selesai TEXT NOT NULL,
-                    status TEXT DEFAULT 'Belum Dikerjakan',
-                    deskripsi TEXT,
-                    prioritas TEXT,
-                    kategori TEXT,
-                    pengulangan TEXT,
-                    FOREIGN KEY (user_id) REFERENCES users(id)
-                );
-            """;
+                        CREATE TABLE IF NOT EXISTS tasks (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            user_id INTEGER NOT NULL,
+                            nama TEXT NOT NULL,
+                            tanggal_dibuat TEXT NOT NULL,
+                            tanggal_selesai TEXT NOT NULL,
+                            status TEXT DEFAULT 'Belum Dikerjakan',
+                            deskripsi TEXT,
+                            prioritas TEXT,
+                            kategori TEXT,
+                            pengulangan TEXT,
+                            FOREIGN KEY (user_id) REFERENCES users(id)
+                        );
+                    """;
+
+            String createCategories = """
+                        CREATE TABLE IF NOT EXISTS categories (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            name TEXT NOT NULL UNIQUE
+                        );
+                    """;
+
+            stmt.execute(createCategories);
+
 
             stmt.execute(createUsers);
             stmt.execute(createTasks);
