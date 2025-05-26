@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="15"
+      xmlns="http://javafx.com/javafx/11.0.14-internal"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.todolist_rplbo.Controller.DetailController">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Detail Tugas" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+
+    <GridPane hgap="10" vgap="10">
+        <Label text="Nama Tugas:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="namaTugasField" GridPane.rowIndex="0" GridPane.columnIndex="1" editable="false"/>
+
+        <Label text="Deadline:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="deadlineField" GridPane.rowIndex="1" GridPane.columnIndex="1" editable="false"/>
+
+        <Label text="Prioritas:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="prioritasField" GridPane.rowIndex="2" GridPane.columnIndex="1" editable="false"/>
+
+        <Label text="Status:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="statusField" GridPane.rowIndex="3" GridPane.columnIndex="1" editable="false"/>
+
+        <Label text="Kategori:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextField fx:id="kategoriField" GridPane.rowIndex="4" GridPane.columnIndex="1" editable="false"/>
+
+        <Label text="Deskripsi:" GridPane.rowIndex="5" GridPane.columnIndex="0" />
+        <TextArea fx:id="deskripsiArea" prefRowCount="5" wrapText="true" GridPane.rowIndex="5" GridPane.columnIndex="1" editable="false"/>
+    </GridPane>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button onAction="#handleKembali" style="-fx-background-color: gray; -fx-text-fill: white;" text="Kembali" />
+    </HBox>
+
+</VBox>

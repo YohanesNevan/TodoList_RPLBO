@@ -10,82 +10,66 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-
-// Connection to SQLite database - Maik
-import org.example.todolist_rplbo.database.SQLiteConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import org.example.todolist_rplbo.Model.User;
+import org.example.todolist_rplbo.Service.UserManager;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class RegisterController {
 
-    @FXML
-    private TextField name;
-
-    @FXML
-    private TextField username;
-
-    @FXML
-    private PasswordField password;
+    @FXML private TextField username;
+    @FXML private PasswordField password;
 
     @FXML
     private void register() {
-        String nameText = name.getText();
-        String user = username.getText();
-        String pass = password.getText();
+        String usernameText = username.getText().trim();
+        String pass = password.getText().trim();
 
-        // Simpan data ke database / file (dummy validasi dulu)
-        if (!nameText.isEmpty() && !user.isEmpty() && !pass.isEmpty()) {
-            try (Connection conn = SQLiteConnection.getConnection()) {
-            String query = "INSERT INTO users (name, username, password) VALUES (?, ?, ?)";
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, nameText);
-            stmt.setString(2, user);
-            stmt.setString(3, pass); // NOTE: sebaiknya pakai hashing untuk password nanti
-        
-            stmt.executeUpdate();
-            showAlert("Register Successful", "Account created for " + user + "!");
 
-            // Arahkan ke login setelah berhasil register
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/login-view.fxml"));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) name.getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Login");
-            stage.show();
+        if (usernameText.isEmpty() || pass.isEmpty()) {
+            showAlert("Register Gagal", "Semua field harus diisi.");
+            return;
+        }
 
-            } catch (SQLException e) {
-            if (e.getMessage().contains("UNIQUE constraint failed")) {
-                showAlert("Register Failed", "Username already exists.");
+        if (pass.length() < 6) {
+            showAlert("Password Lemah", "Password minimal 6 karakter.");
+            return;
+        }
+
+        try {
+            UserManager userManager = new UserManager();
+            boolean success = userManager.registerUser(usernameText, pass);
+
+            if (success) {
+                showAlert("Sukses", "Akun berhasil dibuat untuk " + usernameText + "!");
+                goToLogin();
             } else {
-                e.printStackTrace();
-                showAlert("Register Failed", "Database error occurred.");
+                showAlert("Gagal", "Username sudah digunakan.");
             }
-            } catch (IOException e) {
-            e.printStackTrace();
-            showAlert("Register Failed", "Error loading login page.");
-            }
-        } else {
-            showAlert("Register Failed", "Please fill all fields.");
-        }
-        }
 
-    @FXML
-    private void showLoginStage(MouseEvent event) {
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Terjadi kesalahan saat akses database.");
+        }
+    }
+
+    private void goToLogin() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/login-view.fxml"));
             Parent root = loader.load();
-            Scene scene = new Scene(root);
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(scene);
+            Stage stage = (Stage) username.getScene().getWindow();
+            stage.setScene(new Scene(root));
             stage.setTitle("Login");
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void showLoginStage(MouseEvent event) {
+        goToLogin();
     }
 
     private void showAlert(String title, String message) {
@@ -96,5 +80,3 @@ public class RegisterController {
         alert.showAndWait();
     }
 }
-
-

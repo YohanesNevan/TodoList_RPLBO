@@ -11,61 +11,53 @@ import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
+import org.example.todolist_rplbo.Model.User;
+import org.example.todolist_rplbo.Service.UserManager;
+import org.example.todolist_rplbo.Util.UserSession;
+
 import java.io.IOException;
-
-// Connection to SQLite database - Maik
-import org.example.todolist_rplbo.database.SQLiteConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
 
 public class LoginController {
 
-    @FXML
-    private TextField username;
-
-    @FXML
-    private PasswordField password;
+    @FXML private TextField username;
+    @FXML private PasswordField password;
 
     @FXML
     private void login(ActionEvent event) {
-        String user = username.getText();
-        String pass = password.getText();
+        String userInput = username.getText().trim();
+        String passInput = password.getText().trim();
 
-        // Connect to the database
-        try (Connection connection = SQLiteConnection.getConnection()) {
-            String query = "SELECT * FROM users WHERE username = ? AND password = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, user);
-            preparedStatement.setString(2, pass);
+        if (userInput.isEmpty() || passInput.isEmpty()) {
+            showAlert("Login Gagal", "Username dan password tidak boleh kosong.");
+            return;
+        }
 
-            // Execute the query
-            if (preparedStatement.executeQuery().next()) {
-                try {
-                    // Load file FXML dashboard
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/dashboard-view.fxml"));
-                    Parent root = loader.load();
+        try {
+            UserManager userManager = new UserManager();
+            User user = userManager.login(userInput, passInput);
 
-                    // Dapatkan stage dari event
-                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            if (user != null) {
+                // Simpan session
+                UserSession.startSession(user.getId(), user.getUsername());
 
-                    // Buat scene baru dan set ke stage
-                    Scene scene = new Scene(root);
-                    stage.setScene(scene);
-                    stage.setTitle("Dashboard");
-                    stage.show();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    showAlert("Error", "Failed to load dashboard.");
-                }
+                // Arahkan ke dashboard
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/dashboard-view.fxml"));
+                Parent root = loader.load();
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Dashboard");
+                stage.show();
             } else {
-                showAlert("Login Failed", "Incorrect username or password.");
+                showAlert("Login Gagal", "Username atau password salah.");
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
-            showAlert("Error", "Database connection failed.");
+            showAlert("Error", "Terjadi kesalahan saat mengakses database.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error", "Gagal memuat dashboard.");
         }
     }
 

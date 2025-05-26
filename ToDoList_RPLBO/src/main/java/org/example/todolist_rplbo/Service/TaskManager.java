@@ -1,11 +1,10 @@
 package org.example.todolist_rplbo.Service;
 
 import org.example.todolist_rplbo.Model.Task;
+import org.example.todolist_rplbo.Service.SQLiteConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,23 +12,28 @@ public class TaskManager {
     private Connection conn;
 
     public TaskManager() throws SQLException {
-        conn = DBConnection.getConnection();
+        this.conn = SQLiteConnection.getConnection();
     }
 
     public boolean createTask(Task task) {
-        String sql = "INSERT INTO tasks (user_id, name, description, due_date, priority, category, isRepeated) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = """
+            INSERT INTO tasks (user_id, nama, tanggal_dibuat, status, deskripsi, 
+                               tanggal_selesai, prioritas, kategori, pengulangan)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, task.getUserId());
-            stmt.setString(2, task.getName());
-            stmt.setString(3, task.getDescription());
-            stmt.setString(4, task.getDueDate().toString());
-            stmt.setString(5, task.getPriority());
-            stmt.setString(6, task.getCategory());
-            stmt.setInt(7, task.isRepeated() ? 1 : 0);
+            stmt.setString(2, task.getNama());
+            stmt.setString(3, task.getTanggalMulaiString());
+            stmt.setString(4, task.getStatus());
+            stmt.setString(5, task.getDeskripsi());
+            stmt.setString(6, task.getTanggalSelesaiString());
+            stmt.setString(7, task.getPrioritas());
+            stmt.setString(8, task.getKategori());
+            stmt.setString(9, task.getPengulangan());
 
-            int affected = stmt.executeUpdate();
-            return affected > 0;
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -42,51 +46,38 @@ public class TaskManager {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
-
-            ResultSet rs = stmt.executeQuery();
-
-            while(rs.next()) {
-                Task task = Task.fromResultSet(rs);
-                tasks.add(task);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return tasks;
-    }
-
-    public Task getTaskById(int id) {
-        Task task = null;
-        String sql = "SELECT * FROM tasks WHERE id = ?";
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                task = Task.fromResultSet(rs);
+                tasks.add(Task.fromResultSet(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return task;
+
+        return tasks;
     }
 
     public boolean updateTask(Task task) {
-        String sql = "UPDATE FROM tasks SET name = ?, description = ?, due_date = ?, priority = ?, status = ?, isRepeat = ?, repeatType = ? WHERE id = ?";
+        String sql = """
+            UPDATE tasks
+            SET nama = ?, tanggal_dibuat = ?, status = ?, deskripsi = ?,
+                tanggal_selesai = ?, prioritas = ?, kategori = ?, pengulangan = ?
+            WHERE id = ?;
+        """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, task.getName());
-            stmt.setString(2, task.getDescription());
-            stmt.setString(3, task.getDueDate().toString());
-            stmt.setString(4, task.getPriority());
-            stmt.setString(5, task.getStatus());
-            stmt.setInt(6, task.isRepeated() ? 1 : 0);
-            stmt.setString(7, task.getRepeatType());
+            stmt.setString(1, task.getNama());
+            stmt.setString(2, task.getTanggalMulaiString());
+            stmt.setString(3, task.getStatus());
+            stmt.setString(4, task.getDeskripsi());
+            stmt.setString(5, task.getTanggalSelesaiString());
+            stmt.setString(6, task.getPrioritas());
+            stmt.setString(7, task.getKategori());
+            stmt.setString(8, task.getPengulangan());
+            stmt.setInt(9, task.getId());
 
-            int affected = stmt.executeUpdate();
-            return affected > 0;
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -98,12 +89,25 @@ public class TaskManager {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-
-            int affected = stmt.executeUpdate();
-            return affected > 0;
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public Task getTaskById(int id) {
+        String sql = "SELECT * FROM tasks WHERE id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return Task.fromResultSet(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

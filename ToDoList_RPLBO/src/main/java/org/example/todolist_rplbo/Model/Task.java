@@ -2,126 +2,155 @@ package org.example.todolist_rplbo.Model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class Task {
     private int id;
-    private String name;
-    private String description;
-    private LocalDateTime dueDate;
-    private String priority;
-    private String category;
-    private String status;
-    private boolean isRepeated;
-    private String repeatType;
     private int userId;
+    private String nama;
+    private LocalDate tanggal;
+    private String status;
+    private String deskripsi;
+    private LocalDate tanggalSelesai;
+    private String prioritas;
+    private String kategori;
+    private String pengulangan;
 
-    public Task(String name, String description, LocalDateTime dueDate, String priority, String category, String status, boolean isRepeated, String repeatType, int userId) {
-        this.name = name;
-        this.description = description;
-        this.dueDate = dueDate;
-        this.priority = priority;
-        this.category = category;
-        this.status = status;
-        this.isRepeated = isRepeated;
-        this.repeatType = repeatType;
+    public Task(String nama, int userId, LocalDate tanggal, String status, String deskripsi,
+                LocalDate tanggalSelesai, String prioritas, String kategori) {
+//        this.id = id;
         this.userId = userId;
+        this.nama = nama;
+        this.tanggal = tanggal;
+        this.status = status;
+        this.deskripsi = deskripsi;
+        this.tanggalSelesai = tanggalSelesai;
+        this.prioritas = prioritas;
+        this.kategori = kategori;
+        this.pengulangan = null;
     }
 
-    public Task() {}
-
-    public boolean isOverdue() { //apakah sudah lewat deadline
-        return status.equalsIgnoreCase("Berlangsung") && dueDate.isBefore(LocalDateTime.now());
-    }
-
-    public String toString() { //buat jadiin string (bantu debugging juga)
-        return "Task{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", dueDate=" + dueDate +
-                ", status='" + status + '\'' +
-                ", priority='" + priority + '\'' +
-                ", category='" + category + '\'' +
-                '}';
-    }
-
-    public static Task fromResultSet(ResultSet rs) throws SQLException { //buat ambil datanya dari resultset
+    public static Task fromResultSet(ResultSet rs) throws SQLException {
         Task task = new Task();
-
         task.setId(rs.getInt("id"));
-        task.setName(rs.getString("name"));
-        task.setDescription(rs.getString("description"));
-        task.setDueDate(rs.getTimestamp("due_date").toLocalDateTime());
-        task.setPriority(rs.getString("priority"));
-        task.setCategory(rs.getString("category"));
-        task.setStatus(rs.getString("status"));
-        task.setRepeated(rs.getBoolean("is_repeated"));
-        task.setRepeatType(rs.getString("repeat_type"));
         task.setUserId(rs.getInt("user_id"));
+        task.setNama(rs.getString("nama"));
+        task.setTanggal(LocalDate.parse(rs.getString("tanggal_dibuat")));
+        task.setTanggalSelesai(LocalDate.parse(rs.getString("tanggal_selesai")));
+        task.setDeskripsi(rs.getString("deskripsi"));
+        task.setStatus(rs.getString("status"));
+        task.setPrioritas(rs.getString("prioritas"));
+        task.setKategori(rs.getString("kategori"));
+        task.setPengulangan(rs.getString("pengulangan"));
         return task;
     }
+    public Task() {}
 
-    public String getCategory() {
-        return category;
+    public LocalDateTime kapanUlang(LocalDateTime currentDate) { // cari kapan tasknya muncul lagi
+        switch (pengulangan) {
+            case "Harian":
+                return currentDate.plusDays(1);
+            case "Mingguan":
+                return currentDate.plusWeeks(1);
+            case "Bulanan":
+                return currentDate.plusMonths(1);
+            case null :
+                return null;
+            default:
+                return currentDate;
+        }
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+
+    public String getDeskripsi() {
+        return deskripsi;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDateTime getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(LocalDateTime dueDate) {
-        this.dueDate = dueDate;
+    public void setDeskripsi(String deskripsi) {
+        this.deskripsi = deskripsi;
     }
 
     public int getId() {
         return id;
     }
 
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
 
-    public boolean isRepeated() {
-        return isRepeated;
+    public String getKategori() {
+        return kategori;
     }
 
-    public void setRepeated(boolean repeated) {
-        isRepeated = repeated;
+    public void setKategori(String kategori) {
+        this.kategori = kategori;
     }
 
-    public String getName() {
-        return name;
+    public String getNama() {
+        return nama;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNama(String nama) {
+        this.nama = nama;
     }
 
-    public String getPriority() {
-        return priority;
+    public String getPengulangan() {
+        return pengulangan;
     }
 
-    public void setPriority(String priority) {
-        this.priority = priority;
+    public void setPengulangan(String pengulangan) {
+        this.pengulangan = pengulangan;
     }
 
-    public String getRepeatType() {
-        return repeatType;
+    public String getPrioritas() {
+        return prioritas;
     }
 
-    public void setRepeatType(String repeatType) {
-        this.repeatType = repeatType;
+    public LocalDate getTanggalSelesaiAsLocalDate() {
+        return tanggalSelesai;
+    }
+
+    public LocalDate getTanggalMulaiAsLocalDate() {
+        return tanggal;
+    }
+
+
+    public void setPrioritas(String prioritas) {
+        this.prioritas = prioritas;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getTanggalMulaiString() {
+        return tanggal != null ? tanggal.toString() : "";
+    }
+
+
+    public void setTanggal(LocalDate tanggal) {
+        this.tanggal = tanggal;
+    }
+
+    public String getTanggalSelesaiString() {
+        return tanggalSelesai != null ? tanggalSelesai.toString() : "";
+    }
+
+    public void setTanggalSelesai(LocalDate tanggalSelesai) {
+        this.tanggalSelesai = tanggalSelesai;
     }
 }
