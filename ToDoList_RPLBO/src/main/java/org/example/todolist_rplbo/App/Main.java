@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import org.example.todolist_rplbo.database.DBInitializer; // Adjust the package path if needed
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.example.todolist_rplbo.Service.DBInitializer;
 
 public class Main extends Application {
     @Override
