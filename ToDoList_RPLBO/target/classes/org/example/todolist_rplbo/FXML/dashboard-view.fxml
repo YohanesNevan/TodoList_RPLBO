@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="500.0" prefWidth="800.0"
+<BorderPane prefHeight="500.0" prefWidth="900.0"
             xmlns="http://javafx.com/javafx/11.0.14-internal"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.todolist_rplbo.Controller.DashboardController">
@@ -65,7 +65,7 @@
                         <TableColumn fx:id="colPrioritas" prefWidth="89.99993896484375" text="Prioritas" />
                         <TableColumn fx:id="colStatus" prefWidth="104.66665649414062" text="Status" />
                         <TableColumn fx:id="colKategori" prefWidth="92.0" text="Kategori" />
-                        <TableColumn fx:id="colAksi" minWidth="200.0" prefWidth="200.0" text="Aksi" />
+                        <TableColumn fx:id="colAksi" minWidth="200.0" prefWidth="270.0" text="Aksi" />
                     </columns>
                     <opaqueInsets>
                         <Insets />
