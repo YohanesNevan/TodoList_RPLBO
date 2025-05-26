@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="500" prefWidth="500"
+            xmlns="http://javafx.com/javafx/11.0.14-internal"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.todolist_rplbo.Controller.TambahTugasController">
+
+    <center>
+        <VBox spacing="15" style="-fx-padding: 20;">
+            <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Edit Tugas" />
+
+            <GridPane hgap="10" vgap="10">
+                <Label text="Judul Tugas:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <TextField fx:id="judulField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                <Label text="Deskripsi:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <TextArea fx:id="deskripsiArea" prefRowCount="5" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                <Label text="Tanggal Mulai:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <DatePicker fx:id="tanggalMulaiPicker" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                <Label text="Tanggal Selesai:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <DatePicker fx:id="tanggalSelesaiPicker" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                <Label text="Prioritas:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                <ComboBox fx:id="prioritasComboBox" promptText="Pilih Prioritas" prefWidth="200" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+                <Label text="Kategori:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                <ComboBox fx:id="kategoriComboBox" promptText="Pilih Kategori" prefWidth="200" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+                <Label text="Pengulangan:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                    <RadioButton text="Tidak Berulang" fx:id="rbTidak" selected="true"/>
+                    <RadioButton text="Harian" fx:id="rbHarian"/>
+                    <RadioButton text="Mingguan" fx:id="rbMingguan"/>
+                    <RadioButton text="Bulanan" fx:id="rbBulanan"/>
+                </HBox>
+
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="120" />
+                    <ColumnConstraints prefWidth="350" />
+                </columnConstraints>
+            </GridPane>
+
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Button onAction="#handleBatal" style="-fx-background-color: #f44336; -fx-text-fill: white;" text="Batal" />
+                <Button onAction="#handleSimpan" style="-fx-background-color: #2E8B57; -fx-text-fill: white;" text="Simpan" />
+                <Button onAction="#handleKembali" style="-fx-background-color: gray; -fx-text-fill: white;" text="Kembali" />
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>
