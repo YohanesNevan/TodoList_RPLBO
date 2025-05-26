@@ -1,7 +1,7 @@
 package org.example.todolist_rplbo.Service;
 
 import org.example.todolist_rplbo.Model.Category;
-import org.example.todolist_rplbo.Service.SQLiteConnection;
+import org.example.todolist_rplbo.database.SQLiteConnection;
 
 import java.sql.*;
 import java.util.ArrayList;

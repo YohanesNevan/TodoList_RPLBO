@@ -1,10 +1,9 @@
 package org.example.todolist_rplbo.Service;
 
 import org.example.todolist_rplbo.Model.Task;
-import org.example.todolist_rplbo.Service.SQLiteConnection;
+import org.example.todolist_rplbo.database.SQLiteConnection;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
