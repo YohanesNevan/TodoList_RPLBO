@@ -4,22 +4,24 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import org.example.todolist_rplbo.Model.Task;
-import org.example.todolist_rplbo.Service.TaskService;
+import org.example.todolist_rplbo.Service.TaskManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class ReminderScheduler {
+
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-    private final TaskService taskService;
+    private final TaskManager taskManager;
     private final long reminderMinutes = 10;
 
-    public ReminderScheduler(TaskService taskService) {
-        this.taskService = taskService;
+    public ReminderScheduler(TaskManager taskManager) {
+        this.taskManager = taskManager;
     }
 
     public void start() {
@@ -27,19 +29,24 @@ public class ReminderScheduler {
     }
 
     private void checkTasks() {
-        List<Task> tasks = taskService.getAllTasks();
-        LocalDateTime now = LocalDateTime.now();
+        try {
+            int userId = UserSession.getUserId();
+            List<Task> tasks = taskManager.getAllTasksByUser(userId);
+            LocalDateTime now = LocalDateTime.now();
 
-        for (Task task : tasks) {
-            if ("Berlangsung".equalsIgnoreCase(task.getStatus())) {
-                Duration diff = Duration.between(now, task.getDueDate());
-                long minutes = diff.toMinutes();
+            for (Task task : tasks) {
+                if ("Belum Dikerjakan".equalsIgnoreCase(task.getStatus())) {
+                    LocalDateTime deadline = task.getTanggalSelesaiAsLocalDate().atTime(LocalTime.of(23, 59));
+                    Duration diff = Duration.between(now, deadline);
+                    long minutes = diff.toMinutes();
 
-                if (minutes <= reminderMinutes && minutes >= 0 && !task.isReminderShown()) {
-                    task.setReminderShown(true);
-                    Platform.runLater(() -> showReminder(task));
+                    if (minutes <= reminderMinutes && minutes >= 0) {
+                        Platform.runLater(() -> showReminder(task));
+                    }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace(); // Bisa juga log ke file
         }
     }
 
@@ -47,7 +54,7 @@ public class ReminderScheduler {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Pengingat Tugas");
         alert.setHeaderText("Tugas akan jatuh tempo!");
-        alert.setContentText("Tugas: " + task.getTitle() + "\nDeadline: " + task.getDueDate());
+        alert.setContentText("Judul: " + task.getNama() + "\nDeadline: " + task.getTanggalSelesaiString());
         alert.show();
     }
 

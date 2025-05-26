@@ -12,24 +12,38 @@ public class UserManager {
         this.conn = SQLiteConnection.getConnection();
     }
 
-    public boolean register(User user) {
-        if (isUsernameTaken(user.getUsername())) {
+    public boolean registerUser(String username, String password) throws SQLException {
+        if (isUsernameTaken(username)) {
             return false;
         }
 
         String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getPassword());
-
-            return stmt.executeUpdate() > 0;
-
+        try (Connection conn = SQLiteConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            stmt.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
+
+
+    public boolean isUsernameTaken(String username) {
+        String sql = "SELECT id FROM users WHERE username = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
 
     public User login(String username, String password) {
         String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
@@ -52,18 +66,6 @@ public class UserManager {
         return null;
     }
 
-    public boolean isUsernameTaken(String username) {
-        String sql = "SELECT id FROM users WHERE username = ?";
-
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
-            return rs.next();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return true;
-        }
-    }
 
     public User getUserById(int id) {
         String sql = "SELECT * FROM users WHERE id = ?";

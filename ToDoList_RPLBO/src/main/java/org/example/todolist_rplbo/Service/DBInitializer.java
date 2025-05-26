@@ -12,8 +12,7 @@ public class DBInitializer {
 
             String createUsers = """
                         CREATE TABLE IF NOT EXISTS users (
-                            id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            name TEXT NOT NULL,
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,                        
                             username TEXT NOT NULL UNIQUE,
                             password TEXT NOT NULL
                         );
@@ -42,11 +41,10 @@ public class DBInitializer {
                         );
                     """;
 
-            stmt.execute(createCategories);
-
-
             stmt.execute(createUsers);
+            stmt.execute(createCategories);
             stmt.execute(createTasks);
+
 
             System.out.println("Database berhasil dibuat dan tabel sudah ada.");
 

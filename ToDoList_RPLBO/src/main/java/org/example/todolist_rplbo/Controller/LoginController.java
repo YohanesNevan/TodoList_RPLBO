@@ -11,42 +11,53 @@ import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
+import org.example.todolist_rplbo.Model.User;
+import org.example.todolist_rplbo.Service.UserManager;
+import org.example.todolist_rplbo.Util.UserSession;
+
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class LoginController {
 
-    @FXML
-    private TextField username;
+    @FXML private TextField username;
+    @FXML private PasswordField password;
 
     @FXML
-    private PasswordField password;
+    private void login(ActionEvent event) {
+        String userInput = username.getText().trim();
+        String passInput = password.getText().trim();
 
-    @FXML
-    private void login(ActionEvent event) { // Ubah parameter menjadi ActionEvent
-        String user = username.getText();
-        String pass = password.getText();
+        if (userInput.isEmpty() || passInput.isEmpty()) {
+            showAlert("Login Gagal", "Username dan password tidak boleh kosong.");
+            return;
+        }
 
-        if (user.equals("admin") && pass.equals("admin")) {
-            try {
-                // Load file FXML dashboard
+        try {
+            UserManager userManager = new UserManager();
+            User user = userManager.login(userInput, passInput);
+
+            if (user != null) {
+                // Simpan session
+                UserSession.startSession(user.getId(), user.getUsername());
+
+                // Arahkan ke dashboard
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/dashboard-view.fxml"));
                 Parent root = loader.load();
-
-                // Dapatkan stage dari event
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-                // Buat scene baru dan set ke stage
-                Scene scene = new Scene(root);
-                stage.setScene(scene);
+                stage.setScene(new Scene(root));
                 stage.setTitle("Dashboard");
                 stage.show();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                showAlert("Error", "Failed to load dashboard.");
+            } else {
+                showAlert("Login Gagal", "Username atau password salah.");
             }
-        } else {
-            showAlert("Login Failed", "Incorrect username or password.");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Terjadi kesalahan saat mengakses database.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error", "Gagal memuat dashboard.");
         }
     }
 

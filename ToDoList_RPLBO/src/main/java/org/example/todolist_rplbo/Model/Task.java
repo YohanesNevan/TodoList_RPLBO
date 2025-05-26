@@ -116,6 +116,15 @@ public class Task {
         return prioritas;
     }
 
+    public LocalDate getTanggalSelesaiAsLocalDate() {
+        return tanggalSelesai;
+    }
+
+    public LocalDate getTanggalMulaiAsLocalDate() {
+        return tanggal;
+    }
+
+
     public void setPrioritas(String prioritas) {
         this.prioritas = prioritas;
     }

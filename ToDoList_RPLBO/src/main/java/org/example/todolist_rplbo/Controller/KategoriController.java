@@ -1,7 +1,5 @@
 package org.example.todolist_rplbo.Controller;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.example.todolist_rplbo.Model.Category;
 import org.example.todolist_rplbo.Service.CategoryManager;
+import org.example.todolist_rplbo.Util.KategoriProvider;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -22,7 +21,6 @@ import java.util.List;
 public class KategoriController {
 
     private CategoryManager categoryManager;
-    private ObservableList<String> kategoriList = FXCollections.observableArrayList();
 
     @FXML private TextField kategoriField;
     @FXML private ListView<String> kategoriListView;
@@ -33,11 +31,12 @@ public class KategoriController {
             categoryManager = new CategoryManager();
             List<Category> categories = categoryManager.getAllCategories();
 
+            KategoriProvider.getKategoriList().clear();
             for (Category c : categories) {
-                kategoriList.add(c.getName());
+                KategoriProvider.tambahKategori(c.getName());
             }
 
-            kategoriListView.setItems(kategoriList);
+            kategoriListView.setItems(KategoriProvider.getKategoriList());
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -48,42 +47,41 @@ public class KategoriController {
     @FXML
     private void handleTambahKategori() {
         String newKategori = kategoriField.getText().trim();
-        if (!newKategori.isEmpty() && !kategoriList.contains(newKategori)) {
+
+        if (!newKategori.isEmpty() && !KategoriProvider.getKategoriList().contains(newKategori)) {
             boolean success = categoryManager.addCategory(newKategori);
             if (success) {
-                kategoriList.add(newKategori);
+                KategoriProvider.tambahKategori(newKategori);
                 kategoriField.clear();
             } else {
                 showAlert("Gagal", "Kategori mungkin sudah ada.");
             }
         }
-
     }
 
     @FXML
     private void handleHapusKategori() {
         String selected = kategoriListView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-                List<Category> all = categoryManager.getAllCategories();
-                Category target = all.stream().filter(c -> c.getName().equals(selected)).findFirst().orElse(null);
+            List<Category> all = categoryManager.getAllCategories();
+            Category target = all.stream().filter(c -> c.getName().equals(selected)).findFirst().orElse(null);
 
-                if (target != null && categoryManager.deleteCategory(target.getId())) {
-                    kategoriList.remove(selected);
-                } else {
-                    showAlert("Gagal", "Kategori gagal dihapus.");
-                }
+            if (target != null && categoryManager.deleteCategory(target.getId())) {
+                KategoriProvider.hapusKategori(selected);
+            } else {
+                showAlert("Gagal", "Kategori gagal dihapus.");
+            }
         }
     }
-
 
     public void handleKembali(ActionEvent event) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/dashboard-view.fxml"));
-            Parent registerRoot = fxmlLoader.load();
-            Scene registerScene = new Scene(registerRoot);
+            Parent root = fxmlLoader.load();
+            Scene scene = new Scene(root);
 
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(registerScene);
+            stage.setScene(scene);
             stage.setTitle("Dashboard");
             stage.show();
         } catch (IOException e) {
@@ -98,5 +96,4 @@ public class KategoriController {
         a.setContentText(message);
         a.showAndWait();
     }
-
 }

@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 
 public class SQLiteConnection {
-    private static final String URL = "jdbc:sqlite:../ToDoList_RPLBO/todolist.db";
+    private static final String URL = "jdbc:sqlite:todolist.db";
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL);
