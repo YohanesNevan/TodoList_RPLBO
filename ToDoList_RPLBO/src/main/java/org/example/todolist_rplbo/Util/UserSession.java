@@ -9,12 +9,14 @@ public class UserSession {
         userId = id;
         username = user;
         loggedIn = true;
-    }
+        PersistentSession.saveSession(id, user); // Tambahkan baris ini
+        }
 
     public static synchronized void endSession() {
         userId = 0;
         username = null;
         loggedIn = false;
+        PersistentSession.clearSession(); // Tambahkan baris ini
     }
 
     public static boolean isLoggedIn() {

@@ -6,15 +6,20 @@ import javafx.fxml.FXMLLoader;
 import org.example.todolist_rplbo.database.DBInitializer; // Adjust the package path if needed
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.example.todolist_rplbo.Util.PersistentSession;
 
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        // Initialize the database (uncomment if needed)
         DBInitializer.initializeDatabase();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/login-view.fxml"));
+        FXMLLoader fxmlLoader;
+        if (PersistentSession.isLoggedIn()) {
+            fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/dashboard-view.fxml"));
+        } else {
+            fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/login-view.fxml"));
+        }
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Login");
+        stage.setTitle(PersistentSession.isLoggedIn() ? "Dashboard" : "Login");
         stage.setScene(scene);
         stage.show();
     }
