@@ -6,6 +6,8 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.TextField?>
 
 <BorderPane prefHeight="600" prefWidth="800"
             xmlns="http://javafx.com/javafx/11.0.14-internal"
@@ -15,16 +17,23 @@
     <center>
         <VBox spacing="10" style="-fx-padding: 20;">
             <Label style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Riwayat Tugas" />
-         <Button mnemonicParsing="false" onAction="#handleDashboard" prefHeight="25.0" prefWidth="80.0" text="Dashboard" />
+            <Button mnemonicParsing="false" onAction="#handleDashboard" prefHeight="25.0" prefWidth="80.0" text="Dashboard" />
 
             <Label fx:id="summaryLabel" style="-fx-font-size: 14px; -fx-padding: 0 0 10 0;" />
-
+            <StackPane styleClass="highlight-rectangle">
+                <children>
+                    <TextField fx:id="searchBox" styleClass="transparent" />
+                    <Button mnemonicParsing="false" onAction="#bersihkansearch" styleClass="delete-button" text="Bersihkan" StackPane.alignment="CENTER_RIGHT" />
+                </children>
+            </StackPane>
             <TableView fx:id="riwayatTable" prefHeight="400">
                 <columns>
-                    <TableColumn fx:id="colTaskName" prefWidth="200" text="Nama Tugas" />
-                    <TableColumn fx:id="colTanggalMulai" prefWidth="120" text="Tanggal Mulai" />
-                    <TableColumn fx:id="colTanggalSelesai" prefWidth="120" text="Tanggal Selesai" />
-                    <TableColumn fx:id="colStatus" prefWidth="100" text="Status" />
+                    <TableColumn fx:id="colTaskName" prefWidth="150" text="Nama Tugas" />
+                    <TableColumn fx:id="colTanggalMulai" prefWidth="100" text="Mulai" />
+                    <TableColumn fx:id="colTanggalSelesai" prefWidth="100" text="Selesai" />
+                    <TableColumn fx:id="colStatus" prefWidth="80" text="Status" />
+                    <TableColumn fx:id="colPrioritas" prefWidth="80" text="Prioritas" />
+                    <TableColumn fx:id="colKategori" prefWidth="100" text="Kategori" />
                 </columns>
             </TableView>
         </VBox>

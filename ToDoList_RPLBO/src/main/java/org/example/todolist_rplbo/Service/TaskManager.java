@@ -83,6 +83,19 @@ public class TaskManager {
         }
     }
 
+    public boolean markTaskAsSelesai(int taskId) {
+        String sql = "UPDATE tasks SET status = 'Selesai' WHERE id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, taskId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
     public boolean deleteTask(int id) {
         String sql = "DELETE FROM tasks WHERE id = ?";
 
