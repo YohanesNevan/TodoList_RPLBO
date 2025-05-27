@@ -3,6 +3,7 @@ package org.example.todolist_rplbo.App;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import org.example.todolist_rplbo.Util.UserSession;
 import org.example.todolist_rplbo.database.DBInitializer;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -14,6 +15,9 @@ public class Main extends Application {
         DBInitializer.initializeDatabase();
         FXMLLoader fxmlLoader;
         if (PersistentSession.isLoggedIn()) {
+            int userId = PersistentSession.getUserId();
+            String username = PersistentSession.getUsername();
+            UserSession.startSession(userId, username);
             fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/dashboard-view.fxml"));
         } else {
             fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/login-view.fxml"));
