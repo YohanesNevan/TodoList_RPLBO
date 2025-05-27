@@ -3,7 +3,7 @@ package org.example.todolist_rplbo.App;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import org.example.todolist_rplbo.database.DBInitializer; // Adjust the package path if needed
+import org.example.todolist_rplbo.database.DBInitializer;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.example.todolist_rplbo.Util.PersistentSession;

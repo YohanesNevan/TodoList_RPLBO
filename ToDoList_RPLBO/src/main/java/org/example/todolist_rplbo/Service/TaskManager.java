@@ -1,10 +1,9 @@
 package org.example.todolist_rplbo.Service;
 
 import org.example.todolist_rplbo.Model.Task;
-import org.example.todolist_rplbo.Service.SQLiteConnection;
+import org.example.todolist_rplbo.database.SQLiteConnection;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,6 +82,19 @@ public class TaskManager {
             return false;
         }
     }
+
+    public boolean markTaskAsSelesai(int taskId) {
+        String sql = "UPDATE tasks SET status = 'Selesai' WHERE id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, taskId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     public boolean deleteTask(int id) {
         String sql = "DELETE FROM tasks WHERE id = ?";
