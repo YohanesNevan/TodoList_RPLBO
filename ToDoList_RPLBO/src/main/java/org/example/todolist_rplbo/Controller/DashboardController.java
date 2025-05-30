@@ -161,7 +161,28 @@ public class DashboardController {
 
         colStatus.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
         colPrioritas.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPrioritas()));
-        colKategori.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getKategori()));
+
+        // Tambahkan event handler klik pada header kolom prioritas
+        colPrioritas.setSortable(false); // agar tidak sorting default
+        colPrioritas.setGraphic(new Label("Prioritas"));
+        colPrioritas.getGraphic().setOnMouseClicked(event -> {
+            // Tampilkan dialog pilihan filter
+            ChoiceDialog<String> dialog = new ChoiceDialog<>("Semua", "Semua", "Rendah", "Sedang", "Tinggi");
+            dialog.setTitle("Filter Prioritas");
+            dialog.setHeaderText("Filter tugas berdasarkan prioritas");
+            dialog.setContentText("Pilih prioritas:");
+
+            dialog.showAndWait().ifPresent(selected -> {
+                if ("Semua".equals(selected)) {
+                    filteredTasks.setPredicate(createTaskPredicate(searchBox.getText())); // reset ke filter search saja
+                } else {
+                    filteredTasks.setPredicate(task ->
+                        (task.getPrioritas() != null && task.getPrioritas().equalsIgnoreCase(selected)) &&
+                        (searchBox.getText() == null || searchBox.getText().isEmpty() || task.getNama().toLowerCase().contains(searchBox.getText().toLowerCase()))
+                    );
+                }
+            });
+        });
 
         colAksi.setCellFactory(col -> new TableCell<>() {
             private final Button editButton = new Button("Edit");
