@@ -10,7 +10,7 @@
 
     <center>
         <VBox spacing="15" style="-fx-padding: 20;">
-            <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Edit Tugas" />
+            <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Tambah Tugas Baru" />
 
             <GridPane hgap="10" vgap="10">
                 <Label text="Judul Tugas:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
@@ -22,17 +22,31 @@
                 <Label text="Tanggal Mulai:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
                 <DatePicker fx:id="tanggalMulaiPicker" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-                <Label text="Tanggal Selesai:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-                <DatePicker fx:id="tanggalSelesaiPicker" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <Label text="Waktu Mulai:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <HBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                    <Spinner fx:id="jamMulaiSpinner" prefWidth="60"/>
+                    <Label text=":"/>
+                    <Spinner fx:id="menitMulaiSpinner" prefWidth="60"/>
+                </HBox>
 
-                <Label text="Prioritas:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-                <ComboBox fx:id="prioritasComboBox" promptText="Pilih Prioritas" prefWidth="200" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <Label text="Tanggal Selesai:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                <DatePicker fx:id="tanggalSelesaiPicker" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
-                <Label text="Kategori:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
-                <ComboBox fx:id="kategoriComboBox" promptText="Pilih Kategori" prefWidth="200" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <Label text="Waktu Selesai:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                <HBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                    <Spinner fx:id="jamSelesaiSpinner" prefWidth="60"/>
+                    <Label text=":"/>
+                    <Spinner fx:id="menitSelesaiSpinner" prefWidth="60"/>
+                </HBox>
 
-                <Label text="Pengulangan:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-                <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                <Label text="Prioritas:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                <ComboBox fx:id="prioritasComboBox" promptText="Pilih Prioritas" prefWidth="200" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+                <Label text="Kategori:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+                <ComboBox fx:id="kategoriComboBox" promptText="Pilih Kategori" prefWidth="200" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+
+                <Label text="Pengulangan:" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+                <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="8">
                     <RadioButton text="Tidak Berulang" fx:id="rbTidak" selected="true"/>
                     <RadioButton text="Harian" fx:id="rbHarian"/>
                     <RadioButton text="Mingguan" fx:id="rbMingguan"/>

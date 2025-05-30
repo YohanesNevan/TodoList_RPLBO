@@ -273,7 +273,7 @@ public class DashboardController {
                     } else if ("Terlambat".equalsIgnoreCase(status)) {
                         Label statusLabel = new Label("Terlambat");
                         statusLabel.setStyle("-fx-text-fill: red; -fx-font-style: italic;");
-                        container.getChildren().add(statusLabel);
+                        container.getChildren().addAll(deleteButton, statusLabel);
                     } else {
                         container.getChildren().addAll(editButton, deleteButton, selesaiButton);
                         if (!repetitionLabel.getText().isEmpty()) {
