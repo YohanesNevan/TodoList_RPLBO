@@ -62,8 +62,8 @@
                     <columns>
                         <TableColumn fx:id="colNama" prefWidth="108.00001525878906" text="Nama Tugas" />
                         <TableColumn fx:id="colTanggalSelesai" prefWidth="99.33331298828125" text="Deadline" />
-                        <TableColumn fx:id="colPrioritas" prefWidth="89.99993896484375" text="Prioritas" />
                         <TableColumn fx:id="colStatus" prefWidth="104.66665649414062" text="Status" />
+                        <TableColumn fx:id="colPrioritas" prefWidth="89.99993896484375" text="Prioritas" />
                         <TableColumn fx:id="colKategori" prefWidth="92.0" text="Kategori" />
                         <TableColumn fx:id="colAksi" minWidth="200.0" prefWidth="270.0" text="Aksi" />
                     </columns>

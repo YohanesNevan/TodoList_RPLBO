@@ -22,7 +22,9 @@ public class DBInitializer {
                             user_id INTEGER NOT NULL,
                             nama TEXT NOT NULL,
                             tanggal_dibuat TEXT NOT NULL,
+                            waktu_mulai TEXT,           -- Tambahkan ini
                             tanggal_selesai TEXT NOT NULL,
+                            waktu_selesai TEXT,         -- Tambahkan ini
                             status TEXT DEFAULT 'Belum Dikerjakan',
                             deskripsi TEXT,
                             prioritas TEXT,

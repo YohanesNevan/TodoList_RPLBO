@@ -16,21 +16,23 @@ public class TaskManager {
 
     public boolean createTask(Task task) {
         String sql = """
-            INSERT INTO tasks (user_id, nama, tanggal_dibuat, status, deskripsi, 
-                               tanggal_selesai, prioritas, kategori, pengulangan)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+            INSERT INTO tasks (user_id, nama, tanggal_dibuat, waktu_mulai, status, deskripsi, 
+                               tanggal_selesai, waktu_selesai, prioritas, kategori, pengulangan)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, task.getUserId());
             stmt.setString(2, task.getNama());
             stmt.setString(3, task.getTanggalMulaiString());
-            stmt.setString(4, task.getStatus());
-            stmt.setString(5, task.getDeskripsi());
-            stmt.setString(6, task.getTanggalSelesaiString());
-            stmt.setString(7, task.getPrioritas());
-            stmt.setString(8, task.getKategori());
-            stmt.setString(9, task.getPengulangan());
+            stmt.setString(4, task.getWaktuMulaiString()); // waktu_mulai
+            stmt.setString(5, task.getStatus());
+            stmt.setString(6, task.getDeskripsi());
+            stmt.setString(7, task.getTanggalSelesaiString());
+            stmt.setString(8, task.getWaktuSelesaiString()); // waktu_selesai
+            stmt.setString(9, task.getPrioritas());
+            stmt.setString(10, task.getKategori());
+            stmt.setString(11, task.getPengulangan());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -60,21 +62,23 @@ public class TaskManager {
     public boolean updateTask(Task task) {
         String sql = """
             UPDATE tasks
-            SET nama = ?, tanggal_dibuat = ?, status = ?, deskripsi = ?,
-                tanggal_selesai = ?, prioritas = ?, kategori = ?, pengulangan = ?
+            SET nama = ?, tanggal_dibuat = ?, waktu_mulai = ?, status = ?, deskripsi = ?,
+                tanggal_selesai = ?, waktu_selesai = ?, prioritas = ?, kategori = ?, pengulangan = ?
             WHERE id = ?;
         """;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, task.getNama());
             stmt.setString(2, task.getTanggalMulaiString());
-            stmt.setString(3, task.getStatus());
-            stmt.setString(4, task.getDeskripsi());
-            stmt.setString(5, task.getTanggalSelesaiString());
-            stmt.setString(6, task.getPrioritas());
-            stmt.setString(7, task.getKategori());
-            stmt.setString(8, task.getPengulangan());
-            stmt.setInt(9, task.getId());
+            stmt.setString(3, task.getWaktuMulaiString()); // waktu_mulai
+            stmt.setString(4, task.getStatus());
+            stmt.setString(5, task.getDeskripsi());
+            stmt.setString(6, task.getTanggalSelesaiString());
+            stmt.setString(7, task.getWaktuSelesaiString()); // waktu_selesai
+            stmt.setString(8, task.getPrioritas());
+            stmt.setString(9, task.getKategori());
+            stmt.setString(10, task.getPengulangan());
+            stmt.setInt(11, task.getId());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {

@@ -135,7 +135,20 @@ public class DashboardController {
     @FXML
     private void initialize() {
         colNama.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNama()));
-        colTanggalSelesai.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTanggalSelesaiString()));
+
+        // Format deadline: "tglMulai jamMulai - tglSelesai jamSelesai"
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        colTanggalSelesai.setCellValueFactory(cellData -> {
+            Task task = cellData.getValue();
+            String deadline = "-";
+            if (task.getWaktuMulai() != null && task.getWaktuSelesai() != null) {
+                deadline = task.getWaktuMulai().format(formatter) + " - " + task.getWaktuSelesai().format(formatter);
+            } else if (task.getWaktuSelesai() != null) {
+                deadline = task.getWaktuSelesai().format(formatter);
+            }
+            return new SimpleStringProperty(deadline);
+        });
+
         colStatus.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
         colPrioritas.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPrioritas()));
         colKategori.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getKategori()));

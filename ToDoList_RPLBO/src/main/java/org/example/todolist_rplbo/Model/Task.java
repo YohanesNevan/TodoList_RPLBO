@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 public class Task {
@@ -17,6 +18,8 @@ public class Task {
     private String prioritas;
     private String kategori;
     private String pengulangan;
+    private LocalDateTime waktuMulai;
+    private LocalDateTime waktuSelesai;
 
     public Task(String nama, int userId, LocalDate tanggal, String status, String deskripsi,
                 LocalDate tanggalSelesai, String prioritas, String kategori) {
@@ -39,6 +42,16 @@ public class Task {
         task.setNama(rs.getString("nama"));
         task.setTanggal(LocalDate.parse(rs.getString("tanggal_dibuat")));
         task.setTanggalSelesai(LocalDate.parse(rs.getString("tanggal_selesai")));
+        // Ambil waktu mulai dan selesai jika ada
+        String waktuMulaiStr = rs.getString("waktu_mulai");
+        String waktuSelesaiStr = rs.getString("waktu_selesai");
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        if (waktuMulaiStr != null && !waktuMulaiStr.isEmpty()) {
+            task.setWaktuMulai(LocalDateTime.parse(waktuMulaiStr, formatter));
+        }
+        if (waktuSelesaiStr != null && !waktuSelesaiStr.isEmpty()) {
+            task.setWaktuSelesai(LocalDateTime.parse(waktuSelesaiStr, formatter));
+        }
         task.setDeskripsi(rs.getString("deskripsi"));
         task.setStatus(rs.getString("status"));
         task.setPrioritas(rs.getString("prioritas"));
@@ -153,4 +166,30 @@ public class Task {
     public void setTanggalSelesai(LocalDate tanggalSelesai) {
         this.tanggalSelesai = tanggalSelesai;
     }
+
+    // Tambahkan getter dan setter untuk waktuMulai dan waktuSelesai
+    public LocalDateTime getWaktuMulai() {
+        return waktuMulai;
+    }
+
+    public void setWaktuMulai(LocalDateTime waktuMulai) {
+        this.waktuMulai = waktuMulai;
+    }
+
+    public LocalDateTime getWaktuSelesai() {
+        return waktuSelesai;
+    }
+
+    public void setWaktuSelesai(LocalDateTime waktuSelesai) {
+        this.waktuSelesai = waktuSelesai;
+    }
+
+    public String getWaktuMulaiString() {
+        return waktuMulai != null ? waktuMulai.format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")) : "";
+    }
+
+    public String getWaktuSelesaiString() {
+        return waktuSelesai != null ? waktuSelesai.format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")) : "";
+    }
+    
 }
