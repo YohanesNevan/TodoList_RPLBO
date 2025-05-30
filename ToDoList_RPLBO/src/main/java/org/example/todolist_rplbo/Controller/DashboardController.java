@@ -1,5 +1,8 @@
 package org.example.todolist_rplbo.Controller;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,6 +20,7 @@ import org.example.todolist_rplbo.Model.Task;
 import org.example.todolist_rplbo.Service.TaskManager;
 import org.example.todolist_rplbo.Util.UserSession;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -56,6 +60,12 @@ public class DashboardController {
 
     @FXML
     private TextField searchBox;
+
+    @FXML
+    private void bersihkansearch() {
+    // Misal: jika ada TextField pencarian bernama searchField
+    searchBox.clear();
+}
 
     // Handler untuk menu sidebar
     @FXML
@@ -321,6 +331,41 @@ public class DashboardController {
             });
             return row;
         });
+
+        // Tambahkan timer untuk refresh setiap 1 menit
+        Timeline timeline = new Timeline(new KeyFrame(Duration.minutes(1), event -> {
+            refreshTaskStatus();
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+
+        // Panggil sekali saat awal
+        refreshTaskStatus();
+    }
+
+    private void refreshTaskStatus() {
+        boolean updated = false;
+        for (Task task : filteredTasks) {
+            if (!"Selesai".equalsIgnoreCase(task.getStatus())) {
+                LocalDateTime deadline = task.getWaktuSelesai();
+                if (deadline != null) {
+                    if (LocalDateTime.now().isAfter(deadline)) {
+                        if (!"Terlambat".equalsIgnoreCase(task.getStatus())) {
+                            task.setStatus("Terlambat");
+                            updated = true;
+                        }
+                    } else {
+                        if ("Terlambat".equalsIgnoreCase(task.getStatus())) {
+                            task.setStatus("Belum Dikerjakan");
+                            updated = true;
+                        }
+                    }
+                }
+            }
+        }
+        if (updated && taskTable != null) {
+            taskTable.refresh();
+        }
     }
 
     private void reloadTasksFromDatabase() throws SQLException {
@@ -345,36 +390,40 @@ public class DashboardController {
 
     private Predicate<Task> createTaskPredicate(String searchText) {
         return task -> {
-            if (searchText == null || searchText.isEmpty()) return true;
-            String lower = searchText.toLowerCase();
-            return task.getNama().toLowerCase().contains(lower)
-                    || task.getTanggalSelesaiString().toLowerCase().contains(lower)
-                    || task.getStatus().toLowerCase().contains(lower);
+            if (task.getNama().toLowerCase().contains(searchText.toLowerCase())) {
+                return true;
+            }
+            return false;
         };
-    }
-
-    @FXML
-    public void bersihkansearch(ActionEvent event) {
-        if (searchBox != null) {
-            searchBox.clear();
-        }
     }
 
     private void handleEdit(Task task) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/edittugas-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/tambahtugas-view.fxml"));
             Parent root = loader.load();
             TambahTugasController controller = loader.getController();
-            controller.setEditMode(task);
-            Stage stage = (Stage) taskTable.getScene().getWindow();
+            controller.setEditMode(task); // gunakan setEditMode agar field terisi
+
+            Stage stage = new Stage();
             stage.setScene(new Scene(root));
+            stage.setTitle("Edit Task");
+            stage.initOwner(taskTable.getScene().getWindow());
+            stage.showAndWait();
+
+            // Refresh data setelah dialog ditutup
+            reloadTasksFromDatabase();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Gagal memuat data tugas: " + e.getMessage());
         }
     }
 
+    
+
     private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);

@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 public class Task {
@@ -40,18 +39,27 @@ public class Task {
         task.setId(rs.getInt("id"));
         task.setUserId(rs.getInt("user_id"));
         task.setNama(rs.getString("nama"));
-        task.setTanggal(LocalDate.parse(rs.getString("tanggal_dibuat")));
-        task.setTanggalSelesai(LocalDate.parse(rs.getString("tanggal_selesai")));
+
+        String tanggalMulaiStr = rs.getString("tanggal_dibuat");
+        if (tanggalMulaiStr != null && !tanggalMulaiStr.isEmpty()) {
+            task.setTanggal(LocalDate.parse(tanggalMulaiStr));
+        }
+
+        String tanggalSelesaiStr = rs.getString("tanggal_selesai");
+        if (tanggalSelesaiStr != null && !tanggalSelesaiStr.isEmpty()) {
+            task.setTanggalSelesai(LocalDate.parse(tanggalSelesaiStr));
+        }
+
         // Ambil waktu mulai dan selesai jika ada
         String waktuMulaiStr = rs.getString("waktu_mulai");
         String waktuSelesaiStr = rs.getString("waktu_selesai");
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         if (waktuMulaiStr != null && !waktuMulaiStr.isEmpty()) {
-            task.setWaktuMulai(LocalDateTime.parse(waktuMulaiStr, formatter));
+            task.setWaktuMulai(LocalDateTime.parse(waktuMulaiStr)); // tanpa formatter custom
         }
         if (waktuSelesaiStr != null && !waktuSelesaiStr.isEmpty()) {
-            task.setWaktuSelesai(LocalDateTime.parse(waktuSelesaiStr, formatter));
+            task.setWaktuSelesai(LocalDateTime.parse(waktuSelesaiStr)); // tanpa formatter custom
         }
+
         task.setDeskripsi(rs.getString("deskripsi"));
         task.setStatus(rs.getString("status"));
         task.setPrioritas(rs.getString("prioritas"));
@@ -172,12 +180,12 @@ public class Task {
         return waktuMulai;
     }
 
-    public void setWaktuMulai(LocalDateTime waktuMulai) {
-        this.waktuMulai = waktuMulai;
-    }
-
     public LocalDateTime getWaktuSelesai() {
         return waktuSelesai;
+    }
+
+    public void setWaktuMulai(LocalDateTime waktuMulai) {
+        this.waktuMulai = waktuMulai;
     }
 
     public void setWaktuSelesai(LocalDateTime waktuSelesai) {
@@ -185,11 +193,11 @@ public class Task {
     }
 
     public String getWaktuMulaiString() {
-        return waktuMulai != null ? waktuMulai.format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")) : "";
+        return waktuMulai != null ? waktuMulai.toString() : "";
     }
 
     public String getWaktuSelesaiString() {
-        return waktuSelesai != null ? waktuSelesai.format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")) : "";
+        return waktuSelesai != null ? waktuSelesai.toString() : "";
     }
     
 }

@@ -113,12 +113,16 @@ public class TambahTugasController {
                 taskBeingEdited.setPrioritas(prioritas);
                 taskBeingEdited.setKategori(kategori);
                 taskBeingEdited.setPengulangan(pengulangan);
+                taskBeingEdited.setWaktuMulai(waktuMulai);      // Tambahkan ini
+                taskBeingEdited.setWaktuSelesai(waktuSelesai);  // Tambahkan ini
                 taskManager.updateTask(taskBeingEdited);
             } else {
                 // Tambah task baru
                 int userId = UserSession.getUserId();
                 Task newTask = new Task(judul, userId, tanggalMulai, "Belum Dikerjakan", deskripsi, tanggalSelesai, prioritas, kategori);
                 newTask.setPengulangan(pengulangan);
+                newTask.setWaktuMulai(waktuMulai);      // Tambahkan ini
+                newTask.setWaktuSelesai(waktuSelesai);  // Tambahkan ini
                 taskManager.createTask(newTask);
             }
 
