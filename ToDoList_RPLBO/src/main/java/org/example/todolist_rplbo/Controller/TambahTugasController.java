@@ -15,6 +15,7 @@ import org.example.todolist_rplbo.Util.KategoriProvider;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class TambahTugasController {
     @FXML private TextField judulField;
@@ -24,6 +25,10 @@ public class TambahTugasController {
     @FXML private ComboBox<String> prioritasComboBox;
     @FXML private ComboBox<String> kategoriComboBox;
     @FXML private RadioButton rbTidak, rbHarian, rbMingguan, rbBulanan;
+    @FXML private Spinner<Integer> jamMulaiSpinner;
+    @FXML private Spinner<Integer> menitMulaiSpinner;
+    @FXML private Spinner<Integer> jamSelesaiSpinner;
+    @FXML private Spinner<Integer> menitSelesaiSpinner;
 
     private Task taskBeingEdited;
 
@@ -39,6 +44,11 @@ public class TambahTugasController {
         rbMingguan.setToggleGroup(pengulanganGroup);
         rbBulanan.setToggleGroup(pengulanganGroup);
         rbTidak.setSelected(true);
+
+        jamMulaiSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23, 8));
+        menitMulaiSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, 0));
+        jamSelesaiSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23, 17));
+        menitSelesaiSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, 0));
     }
 
     public void setEditMode(Task task) {
@@ -64,6 +74,14 @@ public class TambahTugasController {
         String deskripsi = deskripsiArea.getText().trim();
         LocalDate tanggalMulai = tanggalMulaiPicker.getValue();
         LocalDate tanggalSelesai = tanggalSelesaiPicker.getValue();
+        int jamMulai = jamMulaiSpinner.getValue();
+        int menitMulai = menitMulaiSpinner.getValue();
+        int jamSelesai = jamSelesaiSpinner.getValue();
+        int menitSelesai = menitSelesaiSpinner.getValue();
+
+        LocalDateTime waktuMulai = tanggalMulai != null ? tanggalMulai.atTime(jamMulai, menitMulai) : null;
+        LocalDateTime waktuSelesai = tanggalSelesai != null ? tanggalSelesai.atTime(jamSelesai, menitSelesai) : null;
+
         String prioritas = prioritasComboBox.getValue();
         String kategori = kategoriComboBox.getValue();
         String pengulangan = null;
@@ -72,13 +90,14 @@ public class TambahTugasController {
         else if (rbMingguan.isSelected()) pengulangan = "Mingguan";
         else if (rbBulanan.isSelected()) pengulangan = "Bulanan";
 
-        if (judul.isEmpty() || deskripsi.isEmpty() || tanggalMulai == null || tanggalSelesai == null || prioritas == null || kategori == null) {
+        // Validasi
+        if (judul.isEmpty() || deskripsi.isEmpty() || waktuMulai == null || waktuSelesai == null || prioritas == null || kategori == null) {
             new Alert(Alert.AlertType.ERROR, "Semua field harus diisi.").show();
             return;
         }
 
-        if (tanggalSelesai.isBefore(tanggalMulai)) {
-            new Alert(Alert.AlertType.ERROR, "Tanggal selesai tidak boleh sebelum tanggal mulai.").show();
+        if (waktuSelesai.isBefore(waktuMulai)) {
+            new Alert(Alert.AlertType.ERROR, "Waktu selesai tidak boleh sebelum waktu mulai.").show();
             return;
         }
 
