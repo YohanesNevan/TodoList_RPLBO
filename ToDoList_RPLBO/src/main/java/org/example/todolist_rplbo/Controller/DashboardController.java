@@ -268,13 +268,18 @@ public class DashboardController {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
+                if (empty || getIndex() >= getTableView().getItems().size()) {
                     setGraphic(null);
                 } else {
                     Task task = getTableView().getItems().get(getIndex());
 
+                    HBox actionBox = new HBox(5); // selalu buat baru agar tidak reuse salah
+                    actionBox.setStyle("-fx-alignment: CENTER_LEFT;");
+
+                    Label repetitionLabel = new Label(); // pastikan label selalu dibuat ulang
+                    // Tambahkan label pengulangan jika ada
                     if (task.getPengulangan() != null) {
-                        switch(task.getPengulangan()) {
+                        switch (task.getPengulangan()) {
                             case "Harian":
                                 repetitionLabel.setText("🔄(Harian)");
                                 repetitionLabel.setTooltip(new Tooltip("Tugas Harian"));
@@ -295,24 +300,27 @@ public class DashboardController {
                     }
 
                     String status = task.getStatus();
-                    HBox container = new HBox(5);
+                    boolean isSelesai = "Selesai".equalsIgnoreCase(status);
+                    boolean isTerlambat = task.getWaktuSelesai() != null && task.getWaktuSelesai().isBefore(LocalDateTime.now()) && !isSelesai;
 
-                    if ("Selesai".equalsIgnoreCase(status)) {
+                    if (isSelesai) {
                         Label statusLabel = new Label("Selesai");
                         statusLabel.setStyle("-fx-text-fill: green; -fx-font-style: italic;");
-                        container.getChildren().addAll(deleteButton, statusLabel);
-                    } else if ("Terlambat".equalsIgnoreCase(status)) {
+                        actionBox.getChildren().addAll(deleteButton, statusLabel);
+                    } else if (isTerlambat) {
                         Label statusLabel = new Label("Terlambat");
                         statusLabel.setStyle("-fx-text-fill: red; -fx-font-style: italic;");
-                        container.getChildren().addAll(deleteButton, statusLabel);
+                        actionBox.getChildren().addAll(deleteButton, statusLabel);
                     } else {
-                        container.getChildren().addAll(editButton, deleteButton, selesaiButton);
-                        if (!repetitionLabel.getText().isEmpty()) {
-                            container.getChildren().add(repetitionLabel);
-                        }
+                        actionBox.getChildren().addAll(editButton, deleteButton, selesaiButton);
                     }
 
-                    setGraphic(container);
+                    // Tambahkan label pengulangan jika ada (di semua kondisi)
+                    if (!repetitionLabel.getText().isEmpty()) {
+                        actionBox.getChildren().add(repetitionLabel);
+                    }
+
+                    setGraphic(actionBox);
                 }
             }
         });
