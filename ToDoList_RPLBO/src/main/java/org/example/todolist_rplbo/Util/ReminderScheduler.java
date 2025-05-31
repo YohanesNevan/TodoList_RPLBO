@@ -7,6 +7,7 @@ import org.example.todolist_rplbo.Model.Task;
 import org.example.todolist_rplbo.Service.TaskManager;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -36,7 +37,9 @@ public class ReminderScheduler {
 
             for (Task task : tasks) {
                 if ("Belum Dikerjakan".equalsIgnoreCase(task.getStatus())) {
-                    LocalDateTime deadline = task.getTanggalSelesaiAsLocalDate().atTime(LocalTime.of(23, 59));
+                    LocalDateTime deadline = task.getWaktuSelesai() != null ?
+                            task.getWaktuSelesai() :
+                            task.getTanggalSelesaiAsLocalDate().atTime(LocalTime.of(23, 59));
                     Duration diff = Duration.between(now, deadline);
                     long minutes = diff.toMinutes();
 

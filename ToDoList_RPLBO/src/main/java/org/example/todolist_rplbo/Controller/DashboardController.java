@@ -18,6 +18,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import org.example.todolist_rplbo.Model.Task;
 import org.example.todolist_rplbo.Service.TaskManager;
+import org.example.todolist_rplbo.Util.ReminderScheduler;
 import org.example.todolist_rplbo.Util.UserSession;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -60,6 +61,9 @@ public class DashboardController {
 
     @FXML
     private TextField searchBox;
+
+    private ReminderScheduler reminderScheduler;
+
 
     @FXML
     private void bersihkansearch() {
@@ -106,6 +110,9 @@ public class DashboardController {
             if (response == ButtonType.OK) {
                 try {
                     UserSession.endSession();
+                    if (reminderScheduler != null) {
+                        reminderScheduler.stop();
+                    }
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/login-view.fxml"));
                     Parent root = loader.load();
                     Stage stage = (Stage) taskTable.getScene().getWindow();
@@ -371,6 +378,15 @@ public class DashboardController {
 
         // Panggil sekali saat awal
         refreshTaskStatus();
+
+        try {
+            TaskManager taskManager = new TaskManager();
+            reminderScheduler = new ReminderScheduler(taskManager);
+            reminderScheduler.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void refreshTaskStatus() {
