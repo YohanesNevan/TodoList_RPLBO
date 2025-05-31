@@ -161,7 +161,8 @@ public class DashboardController {
 
         colStatus.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
         colPrioritas.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPrioritas()));
-
+        colKategori.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getKategori()));
+        
         // Tambahkan event handler klik pada header kolom prioritas
         colPrioritas.setSortable(false); // agar tidak sorting default
         colPrioritas.setGraphic(new Label("Prioritas"));
