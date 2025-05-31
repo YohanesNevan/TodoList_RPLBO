@@ -4,6 +4,8 @@ import org.example.todolist_rplbo.Model.Task;
 import org.example.todolist_rplbo.database.SQLiteConnection;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,7 +94,14 @@ public class TaskManager {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, taskId);
-            return stmt.executeUpdate() > 0;
+            if (stmt.executeUpdate() > 0) {
+                Task selesaiTask = getTaskById(taskId);
+                if (selesaiTask.getPengulangan() != null) {
+                    generateUlangTask(selesaiTask); // Langsung buat ulang
+                }
+                return true;
+            }
+            return false;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -126,4 +135,29 @@ public class TaskManager {
         }
         return null;
     }
+
+    public boolean generateUlangTask(Task lama) {
+        if (lama.getPengulangan() == null || lama.getWaktuSelesai() == null) return false;
+
+        LocalDateTime baru = lama.kapanUlang(lama.getWaktuSelesai());
+
+        Task baruTask = new Task(
+                lama.getNama(),
+                lama.getUserId(),
+                LocalDate.now(),
+                "Belum Dikerjakan",
+                lama.getDeskripsi(),
+                baru.toLocalDate(),
+                lama.getPrioritas(),
+                lama.getKategori()
+        );
+        baruTask.setWaktuMulai(lama.kapanUlang(lama.getWaktuMulai()));
+        baruTask.setWaktuSelesai(baru);
+        baruTask.setPengulangan(lama.getPengulangan());
+
+        if (baru.isBefore(LocalDateTime.now())) return false;
+
+        return createTask(baruTask);
+    }
+
 }
