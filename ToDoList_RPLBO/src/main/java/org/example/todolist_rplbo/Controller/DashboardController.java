@@ -364,7 +364,11 @@ public class DashboardController {
         try {
             TaskManager taskManager = new TaskManager();
             int userId = UserSession.getUserId();
-            filteredTasks = new FilteredList<>(FXCollections.observableArrayList(taskManager.getAllTasksByUser(userId)), p -> true);
+            ObservableList<Task> allTasks = FXCollections.observableArrayList(taskManager.getAllTasksByUser(userId));
+            ObservableList<Task> activeTasks = allTasks.filtered(task ->
+                !"Selesai".equalsIgnoreCase(task.getStatus())
+            );
+            filteredTasks = new FilteredList<>(activeTasks, p -> true);
             taskTable.setItems(filteredTasks);
 
             // Check for overdue tasks
@@ -462,8 +466,14 @@ public class DashboardController {
     private void reloadTasksFromDatabase() throws SQLException {
         TaskManager taskManager = new TaskManager();
         int userId = UserSession.getUserId();
-        filteredTasks = new FilteredList<>(FXCollections.observableArrayList(taskManager.getAllTasksByUser(userId)), p -> true);
+        ObservableList<Task> allTasks = FXCollections.observableArrayList(taskManager.getAllTasksByUser(userId));
+        // Filter hanya task yang belum selesai
+        ObservableList<Task> activeTasks = allTasks.filtered(task ->
+            !"Selesai".equalsIgnoreCase(task.getStatus())
+        );
+        filteredTasks = new FilteredList<>(activeTasks, p -> true);
         taskTable.setItems(filteredTasks);
+        applyCombinedFilter(); // Pastikan filter pencarian/kategori tetap aktif
     }
 
     private void showTaskDetail(Task task) {
