@@ -38,8 +38,11 @@ public class DBInitializer {
             String createCategories = """
                         CREATE TABLE IF NOT EXISTS categories (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            name TEXT NOT NULL UNIQUE,
-                            is_active INTEGER DEFAULT 1
+                            name TEXT NOT NULL,
+                            user_id INTEGER,
+                            is_active INTEGER DEFAULT 1,
+                            UNIQUE(name, user_id),
+                            FOREIGN KEY (user_id) REFERENCES users(id)
                         );
                     
                     """;
@@ -52,10 +55,10 @@ public class DBInitializer {
 
             for (String category : defaultCategories) {
                 String insertCategory = """
-                            INSERT INTO categories (name, is_active)
-                            SELECT ?, 1
+                            INSERT INTO categories (name, user_id, is_active)
+                            SELECT ?, NULL, 1
                             WHERE NOT EXISTS (
-                                SELECT 1 FROM categories WHERE name = ?
+                                SELECT 1 FROM categories WHERE name = ? AND user_id = NULL
                             );
                         """;
                 PreparedStatement stmt1 = conn.prepareStatement(insertCategory);

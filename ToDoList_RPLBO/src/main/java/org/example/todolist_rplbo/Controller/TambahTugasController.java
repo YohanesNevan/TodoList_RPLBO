@@ -38,7 +38,7 @@ public class TambahTugasController {
         try {
             CategoryManager categoryManager = new CategoryManager();
             KategoriProvider.getKategoriList().clear();
-            categoryManager.getAllCategories().forEach(c -> KategoriProvider.tambahKategori(c.getName()));
+            categoryManager.getAllCategories(UserSession.getUserId()).forEach(c -> KategoriProvider.tambahKategori(c.getName()));
         } catch (SQLException e) {
             e.printStackTrace();
         }

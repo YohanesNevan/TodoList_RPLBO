@@ -11,7 +11,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.example.todolist_rplbo.Model.User;
+import org.example.todolist_rplbo.Service.CategoryManager;
 import org.example.todolist_rplbo.Service.UserManager;
+import org.example.todolist_rplbo.Util.KategoriProvider;
 
 import java.io.IOException;
 import java.sql.SQLException;

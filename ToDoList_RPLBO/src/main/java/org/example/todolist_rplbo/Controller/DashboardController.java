@@ -183,7 +183,7 @@ public class DashboardController {
             KategoriProvider.getKategoriList().clear();
             try {
                 CategoryManager categoryManager = new CategoryManager();
-                for (var category : categoryManager.getAllCategories()) {
+                for (var category : categoryManager.getAllCategories(UserSession.getUserId())) {
                     KategoriProvider.tambahKategori(category.getName());
                 }
             } catch (SQLException e) {
