@@ -38,10 +38,8 @@ public class LoginController {
             User user = userManager.login(userInput, passInput);
 
             if (user != null) {
-                // Simpan session
                 UserSession.startSession(user.getId(), user.getUsername());
 
-                // Arahkan ke dashboard
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/dashboard-view.fxml"));
                 Parent root = loader.load();
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

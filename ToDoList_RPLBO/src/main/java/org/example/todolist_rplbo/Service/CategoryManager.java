@@ -15,7 +15,7 @@ public class CategoryManager {
     }
 
     public boolean addCategory(String name) {
-        String sql = "INSERT INTO categories (name) VALUES (?)";
+        String sql = "INSERT INTO categories (name, is_active) VALUES (?, 1)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, name);
@@ -28,12 +28,12 @@ public class CategoryManager {
 
     public List<Category> getAllCategories() {
         List<Category> list = new ArrayList<>();
-        String sql = "SELECT * FROM categories";
+        String sql = "SELECT * FROM categories WHERE is_active= 1";
 
         try (Statement stmt = conn.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                Category category = new Category(rs.getInt("id"), rs.getString("name"));
+                Category category = new Category(rs.getInt("id"), rs.getString("name"), rs.getInt("is_active"));
                 list.add(category);
             }
         } catch (SQLException e) {
@@ -44,7 +44,7 @@ public class CategoryManager {
     }
 
     public boolean deleteCategory(int id) {
-        String sql = "DELETE FROM categories WHERE id = ?";
+        String sql = "UPDATE categories SET is_active = 0 WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);

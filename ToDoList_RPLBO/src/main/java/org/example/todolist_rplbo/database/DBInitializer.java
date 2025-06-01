@@ -1,6 +1,7 @@
 package org.example.todolist_rplbo.database;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
 
 public class DBInitializer {
@@ -37,14 +38,31 @@ public class DBInitializer {
             String createCategories = """
                         CREATE TABLE IF NOT EXISTS categories (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            name TEXT NOT NULL UNIQUE
+                            name TEXT NOT NULL UNIQUE,
+                            is_active INTEGER DEFAULT 1
                         );
+                    
                     """;
 
             stmt.execute(createUsers);
             stmt.execute(createCategories);
             stmt.execute(createTasks);
 
+            String[] defaultCategories = {"Work", "Personal", "Study", "Home", "Urgent"};
+
+            for (String category : defaultCategories) {
+                String insertCategory = """
+                            INSERT INTO categories (name, is_active)
+                            SELECT ?, 1
+                            WHERE NOT EXISTS (
+                                SELECT 1 FROM categories WHERE name = ?
+                            );
+                        """;
+                PreparedStatement stmt1 = conn.prepareStatement(insertCategory);
+                stmt1.setString(1, category);
+                stmt1.setString(2, category);
+                stmt1.executeUpdate();
+            }
 
             System.out.println("Database berhasil dibuat dan tabel sudah ada.");
 

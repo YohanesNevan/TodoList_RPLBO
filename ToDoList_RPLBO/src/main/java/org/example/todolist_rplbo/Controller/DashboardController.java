@@ -17,7 +17,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import org.example.todolist_rplbo.Model.Task;
+import org.example.todolist_rplbo.Service.CategoryManager;
 import org.example.todolist_rplbo.Service.TaskManager;
+import org.example.todolist_rplbo.Util.KategoriProvider;
 import org.example.todolist_rplbo.Util.ReminderScheduler;
 import org.example.todolist_rplbo.Util.UserSession;
 import java.time.LocalDate;
@@ -64,10 +66,14 @@ public class DashboardController {
 
     private ReminderScheduler reminderScheduler;
 
+    private String currentSearchText = "";
+    private String currentPriorityFilter = "Semua";
+    private String currentKategoriFilter = "Semua";
+
+
 
     @FXML
     private void bersihkansearch() {
-    // Misal: jika ada TextField pencarian bernama searchField
     searchBox.clear();
 }
 
@@ -153,7 +159,6 @@ public class DashboardController {
     private void initialize() {
         colNama.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNama()));
 
-        // Format deadline: "tglMulai jamMulai - tglSelesai jamSelesai"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         colTanggalSelesai.setCellValueFactory(cellData -> {
             Task task = cellData.getValue();
@@ -169,26 +174,49 @@ public class DashboardController {
         colStatus.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
         colPrioritas.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPrioritas()));
         colKategori.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getKategori()));
-        
-        // Tambahkan event handler klik pada header kolom prioritas
-        colPrioritas.setSortable(false); // agar tidak sorting default
+
+
+        colKategori.setSortable(false);
+        colKategori.setText("");
+        colKategori.setGraphic(new Label("Kategori"));
+        colKategori.getGraphic().setOnMouseClicked(event -> {
+            KategoriProvider.getKategoriList().clear();
+            try {
+                CategoryManager categoryManager = new CategoryManager();
+                for (var category : categoryManager.getAllCategories()) {
+                    KategoriProvider.tambahKategori(category.getName());
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            ObservableList<String> kategoriPilihan = FXCollections.observableArrayList();
+            kategoriPilihan.add("Semua");
+            kategoriPilihan.addAll(KategoriProvider.getKategoriList());
+            ChoiceDialog<String> dialog = new ChoiceDialog<>("Semua", kategoriPilihan);
+            dialog.setTitle("Filter Kategori");
+            dialog.setHeaderText("Filter tugas berdasarkan kategori");
+            dialog.setContentText("Pilih kategori:");
+
+            dialog.showAndWait().ifPresent(selected -> {
+                currentKategoriFilter = selected;
+                applyCombinedFilter();
+            });
+        });
+
+
+        colPrioritas.setSortable(false);
+        colPrioritas.setText("");
         colPrioritas.setGraphic(new Label("Prioritas"));
         colPrioritas.getGraphic().setOnMouseClicked(event -> {
-            // Tampilkan dialog pilihan filter
             ChoiceDialog<String> dialog = new ChoiceDialog<>("Semua", "Semua", "Rendah", "Sedang", "Tinggi");
             dialog.setTitle("Filter Prioritas");
             dialog.setHeaderText("Filter tugas berdasarkan prioritas");
             dialog.setContentText("Pilih prioritas:");
 
             dialog.showAndWait().ifPresent(selected -> {
-                if ("Semua".equals(selected)) {
-                    filteredTasks.setPredicate(createTaskPredicate(searchBox.getText())); // reset ke filter search saja
-                } else {
-                    filteredTasks.setPredicate(task ->
-                        (task.getPrioritas() != null && task.getPrioritas().equalsIgnoreCase(selected)) &&
-                        (searchBox.getText() == null || searchBox.getText().isEmpty() || task.getNama().toLowerCase().contains(searchBox.getText().toLowerCase()))
-                    );
-                }
+                currentPriorityFilter = selected;
+                applyCombinedFilter();
             });
         });
 
@@ -212,7 +240,6 @@ public class DashboardController {
                 deleteButton.setOnAction(event -> {
                     Task task = getTableView().getItems().get(getIndex());
 
-                    // Show confirmation dialog
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                     alert.setTitle("Konfirmasi Hapus");
                     alert.setHeaderText("Hapus Tugas");
@@ -272,6 +299,7 @@ public class DashboardController {
                     });
                 });
             }
+
 
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -354,9 +382,11 @@ public class DashboardController {
 
         if (searchBox != null) {
             searchBox.textProperty().addListener((observable, oldValue, newValue) -> {
-                filteredTasks.setPredicate(createTaskPredicate(newValue));
+                currentSearchText = newValue;
+                applyCombinedFilter();
             });
         }
+
 
         taskTable.setRowFactory(tv -> {
             TableRow<Task> row = new TableRow<>();
@@ -412,6 +442,21 @@ public class DashboardController {
         if (updated && taskTable != null) {
             taskTable.refresh();
         }
+    }
+
+    private void applyCombinedFilter() {
+        filteredTasks.setPredicate(task -> {
+            boolean matchesSearch = currentSearchText == null || currentSearchText.isEmpty()
+                    || task.getNama().toLowerCase().contains(currentSearchText.toLowerCase());
+
+            boolean matchesPriority = "Semua".equals(currentPriorityFilter)
+                    || (task.getPrioritas() != null && task.getPrioritas().equalsIgnoreCase(currentPriorityFilter));
+
+            boolean matchesKategori = "Semua".equals(currentKategoriFilter)
+                    || (task.getKategori() != null && task.getKategori().equalsIgnoreCase(currentKategoriFilter));
+
+            return matchesSearch && matchesPriority && matchesKategori;
+        });
     }
 
     private void reloadTasksFromDatabase() throws SQLException {

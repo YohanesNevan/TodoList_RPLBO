@@ -52,6 +52,7 @@ public class KategoriController {
             boolean success = categoryManager.addCategory(newKategori);
             if (success) {
                 KategoriProvider.tambahKategori(newKategori);
+                new Alert(Alert.AlertType.INFORMATION, "Kategori berhasil ditambahkan!").show();
                 kategoriField.clear();
             } else {
                 showAlert("Gagal", "Kategori mungkin sudah ada.");
