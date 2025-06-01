@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
 import org.example.todolist_rplbo.Model.Task;
+import org.example.todolist_rplbo.Service.CategoryManager;
 import org.example.todolist_rplbo.Service.TaskManager;
 import org.example.todolist_rplbo.Util.UserSession;
 import org.example.todolist_rplbo.Util.KategoriProvider;
@@ -34,8 +35,16 @@ public class TambahTugasController {
 
     @FXML
     private void initialize() {
+        try {
+            CategoryManager categoryManager = new CategoryManager();
+            KategoriProvider.getKategoriList().clear();
+            categoryManager.getAllCategories(UserSession.getUserId()).forEach(c -> KategoriProvider.tambahKategori(c.getName()));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         kategoriComboBox.setItems(KategoriProvider.getKategoriList());
-        kategoriComboBox.setEditable(true);
+        kategoriComboBox.setEditable(false);
         prioritasComboBox.getItems().addAll("Rendah", "Sedang", "Tinggi");
 
         ToggleGroup pengulanganGroup = new ToggleGroup();
@@ -45,8 +54,10 @@ public class TambahTugasController {
         rbBulanan.setToggleGroup(pengulanganGroup);
         rbTidak.setSelected(true);
 
-        jamMulaiSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23, 8));
-        menitMulaiSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, 0));
+        LocalDateTime now = LocalDateTime.now();
+        jamMulaiSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23, now.getHour()));
+        menitMulaiSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, now.getMinute()));
+
         jamSelesaiSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 23, 17));
         menitSelesaiSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 59, 0));
     }
@@ -105,7 +116,6 @@ public class TambahTugasController {
             TaskManager taskManager = new TaskManager();
 
             if (taskBeingEdited != null) {
-                // Edit task
                 taskBeingEdited.setNama(judul);
                 taskBeingEdited.setDeskripsi(deskripsi);
                 taskBeingEdited.setTanggal(tanggalMulai);
@@ -113,21 +123,21 @@ public class TambahTugasController {
                 taskBeingEdited.setPrioritas(prioritas);
                 taskBeingEdited.setKategori(kategori);
                 taskBeingEdited.setPengulangan(pengulangan);
-                taskBeingEdited.setWaktuMulai(waktuMulai);      // Tambahkan ini
-                taskBeingEdited.setWaktuSelesai(waktuSelesai);  // Tambahkan ini
+                taskBeingEdited.setWaktuMulai(waktuMulai);
+                taskBeingEdited.setWaktuSelesai(waktuSelesai);
                 taskManager.updateTask(taskBeingEdited);
+                new Alert(Alert.AlertType.INFORMATION, "Tugas berhasil diperbarui!").show();
             } else {
-                // Tambah task baru
                 int userId = UserSession.getUserId();
                 Task newTask = new Task(judul, userId, tanggalMulai, "Belum Dikerjakan", deskripsi, tanggalSelesai, prioritas, kategori);
                 newTask.setPengulangan(pengulangan);
-                newTask.setWaktuMulai(waktuMulai);      // Tambahkan ini
-                newTask.setWaktuSelesai(waktuSelesai);  // Tambahkan ini
+                newTask.setWaktuMulai(waktuMulai);
+                newTask.setWaktuSelesai(waktuSelesai);
                 taskManager.createTask(newTask);
+                new Alert(Alert.AlertType.INFORMATION, "Tugas berhasil ditambahkan!").show();
             }
 
             goToDashboard();
-
         } catch (SQLException e) {
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, "Gagal menyimpan ke database.").show();

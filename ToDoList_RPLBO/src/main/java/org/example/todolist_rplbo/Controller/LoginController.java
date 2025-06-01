@@ -1,5 +1,6 @@
 package org.example.todolist_rplbo.Controller;
 
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -12,7 +13,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import org.example.todolist_rplbo.Model.User;
+import org.example.todolist_rplbo.Service.CategoryManager;
 import org.example.todolist_rplbo.Service.UserManager;
+import org.example.todolist_rplbo.Util.KategoriProvider;
 import org.example.todolist_rplbo.Util.UserSession;
 
 import java.io.IOException;
@@ -38,10 +41,19 @@ public class LoginController {
             User user = userManager.login(userInput, passInput);
 
             if (user != null) {
-                // Simpan session
+                CategoryManager cm = new CategoryManager();
+                KategoriProvider.setAllKategori(
+                        FXCollections.observableArrayList(
+                                cm.getAllCategories(user.getId())
+                                        .stream()
+                                        .map(k -> k.getName())
+                                        .toList()
+                        )
+                );
+
+
                 UserSession.startSession(user.getId(), user.getUsername());
 
-                // Arahkan ke dashboard
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/dashboard-view.fxml"));
                 Parent root = loader.load();
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

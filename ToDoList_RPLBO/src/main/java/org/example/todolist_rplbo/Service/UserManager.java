@@ -23,7 +23,18 @@ public class UserManager {
             stmt.setString(1, username);
             stmt.setString(2, password);
             stmt.executeUpdate();
-            return true;
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    CategoryManager cm = new CategoryManager();
+                    int userId = generatedKeys.getInt(1);
+
+                    cm.copyDefaultCategories(userId);
+                    return true;
+                } else {
+                    throw new SQLException("Creating user failed, no ID obtained.");
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

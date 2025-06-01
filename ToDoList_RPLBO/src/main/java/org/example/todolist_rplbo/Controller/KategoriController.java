@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import org.example.todolist_rplbo.Model.Category;
 import org.example.todolist_rplbo.Service.CategoryManager;
 import org.example.todolist_rplbo.Util.KategoriProvider;
+import org.example.todolist_rplbo.Util.UserSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -29,7 +30,7 @@ public class KategoriController {
     private void initialize() {
         try {
             categoryManager = new CategoryManager();
-            List<Category> categories = categoryManager.getAllCategories();
+            List<Category> categories = categoryManager.getAllCategories(UserSession.getUserId());
 
             KategoriProvider.getKategoriList().clear();
             for (Category c : categories) {
@@ -49,9 +50,10 @@ public class KategoriController {
         String newKategori = kategoriField.getText().trim();
 
         if (!newKategori.isEmpty() && !KategoriProvider.getKategoriList().contains(newKategori)) {
-            boolean success = categoryManager.addCategory(newKategori);
+            boolean success = categoryManager.addCategory(newKategori, UserSession.getUserId());
             if (success) {
                 KategoriProvider.tambahKategori(newKategori);
+                new Alert(Alert.AlertType.INFORMATION, "Kategori berhasil ditambahkan!").show();
                 kategoriField.clear();
             } else {
                 showAlert("Gagal", "Kategori mungkin sudah ada.");
@@ -63,7 +65,7 @@ public class KategoriController {
     private void handleHapusKategori() {
         String selected = kategoriListView.getSelectionModel().getSelectedItem();
         if (selected != null) {
-            List<Category> all = categoryManager.getAllCategories();
+            List<Category> all = categoryManager.getAllCategories(UserSession.getUserId());
             Category target = all.stream().filter(c -> c.getName().equals(selected)).findFirst().orElse(null);
 
             if (target != null && categoryManager.deleteCategory(target.getId())) {
