@@ -503,25 +503,25 @@ public class DashboardController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/todolist_rplbo/FXML/tambahtugas-view.fxml"));
             Parent root = loader.load();
             TambahTugasController controller = loader.getController();
-            controller.setEditMode(task); // gunakan setEditMode agar field terisi
+            controller.setEditMode(task);
 
+            // Ambil stage lama (yang sedang menampilkan taskTable)
+            Stage currentStage = (Stage) taskTable.getScene().getWindow();
+            currentStage.close(); // Tutup stage lama
+
+            // Buka stage baru
             Stage stage = new Stage();
             stage.setScene(new Scene(root));
             stage.setTitle("Edit Task");
-            stage.initOwner(taskTable.getScene().getWindow());
-            stage.showAndWait();
+            stage.show(); // Tidak perlu showAndWait jika tidak modal
 
-            // Refresh data setelah dialog ditutup
-            reloadTasksFromDatabase();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            showAlert("Error", "Gagal memuat data tugas: " + e.getMessage());
         }
     }
 
-    
+
+
 
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
