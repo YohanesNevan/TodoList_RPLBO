@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ukdw.prplbo.jackpot.JackpotController">
+    <children>
+        <Label layoutX="138.0" layoutY="23.0" text="Jackpot Gacor">
+            <font>
+                <Font size="20.0" />
+            </font>
+        </Label>
+        <Label fx:id="lblLetter1" layoutX="50.0" layoutY="80.0" prefHeight="50.0" prefWidth="50.0" style="-fx-border-color: black; -fx-alignment: center;" text="A">
+            <font>
+                <Font size="24.0" />
+            </font>
+        </Label>
+        <Label fx:id="lblLetter2" layoutX="175.0" layoutY="80.0" prefHeight="50.0" prefWidth="50.0" style="-fx-border-color: black; -fx-alignment: center;" text="A">
+            <font>
+                <Font size="24.0" />
+            </font>
+        </Label>
+        <Label fx:id="lblLetter3" layoutX="300.0" layoutY="80.0" prefHeight="50.0" prefWidth="50.0" style="-fx-border-color: black; -fx-alignment: center;" text="A">
+            <font>
+                <Font size="24.0" />
+            </font>
+        </Label>
+        <Button fx:id="btnSpin" layoutX="180.0" layoutY="161.0" mnemonicParsing="false" onAction="#btnSpinClick" text="Spin" />
+        <Label fx:id="lblStatus" layoutX="122.0" layoutY="204.0" prefHeight="17.0" prefWidth="157.0" style="-fx-text-alignment: center;" text="Status: Spin untuk memulai!" />
+    </children>
+</AnchorPane>
